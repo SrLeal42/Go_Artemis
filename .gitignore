@@ -1,0 +1,36 @@
+# ========================
+# IDE e Editores locais
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ========================
+# Arquivos de Sistema Operacional
+# ========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========================
+# Binários e Executáveis (Gerados pelo Go)
+# ========================
+# O Go pode gerar executáveis quando você usa "go build".
+# Não queremos commitar os arquivos compilados (apenas o código-fonte).
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*/bin/
+
+# ========================
+# Dependências Modulares / Cache
+# ========================
+# Caso utilize a pasta de dependências do Go no futuro (go vendor)
+# vendor/
+
+
+project_context/
