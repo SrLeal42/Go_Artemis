@@ -1,5 +1,6 @@
 import * as B from '@babylonjs/core';
 
+import { Camera } from './scripts/Camera';
 
 export class Scene3D {
 
@@ -7,14 +8,15 @@ export class Scene3D {
   public engine : B.Engine;
   public scene : B.Scene;
 
+  public camera : Camera;
+
   private resizeObserver: ResizeObserver | null = null;
 
   constructor(canvas : HTMLCanvasElement) {
     this.canvas = canvas;
-    const engine = new B.Engine(this.canvas, true);
-    this.engine = engine;
+    this.engine = new B.Engine(this.canvas, true);
 
-    const scene = this.CreateScene();
+    const scene = this.createScene();
     this.scene = scene;
 
     if (this.canvas.parentElement) {
@@ -33,32 +35,18 @@ export class Scene3D {
   }
 
 
-  private CreateScene() : B.Scene {
+  private createScene() : B.Scene {
 
     // 2. Cria a Cena e pinta o fundo com a mesma cor do nosso painel escuro
     const scene = new B.Scene(this.engine);
     scene.clearColor = new B.Color4(0.06, 0.09, 0.16, 1);
-
-    // 3. Câmera Orbital (Deixa o usuário girar o cenário com o mouse)
-    const camera = new B.ArcRotateCamera(
-      "camera", 
-      -Math.PI / 2, // Ângulo Inicial (Alpha)
-      Math.PI / 3,  // Inclinação (Beta)
-      12,           // Distância do Zoom
-      B.Vector3.Zero(), 
-      scene
-    );
-    camera.attachControl(this.canvas, true);
-    camera.lowerRadiusLimit = 5; // Limita o Zoom máximo
-    camera.upperRadiusLimit = 30; // Limita quão longe ele pode ir
-    camera.upperBetaLimit = (Math.PI / 2) * 0.9; // Impede entrar "debaixo do chão"
 
     // 4. Luz Diurna
     const light = new B.HemisphericLight("light", new B.Vector3(0, 1, 0), scene);
     light.intensity = 0.8;
 
     // 5. O Chão (Grid Virtual 10x10) usando subdivisions para cortar o plano
-    const ground = B.MeshBuilder.CreateGround("ground", { width: 30, height: 30, subdivisions: 6 }, scene);
+    const ground = B.MeshBuilder.CreateGround("ground", { width: 35, height: 35, subdivisions: 7 }, scene);
     const groundMat = new B.StandardMaterial("groundMat", scene);
     groundMat.wireframe = true; // Transformamos em um "Aramado" para parecer o Grid tático!
     groundMat.diffuseColor = new B.Color3(0.2, 0.4, 0.8); // Um azul digital 
@@ -72,10 +60,42 @@ export class Scene3D {
     roverMat.diffuseColor = new B.Color3(0.9, 0.4, 0.1); 
     rover.material = roverMat;
 
+    this.camera = new Camera(scene, this.canvas, rover)
 
     return scene;
 
-  } 
+  }
+
+
+  public checkConditionOnMap(cond: string, dir: string): boolean {
+    console.log(cond, dir)
+    return false;
+  }
+
+
+  public moveForward(value : number): Promise<void> {
+    return new Promise((resolve) => {
+        console.log(`[INÍCIO] INICIANDO MOVIMENTO FRENTE: ${value} unidades`);
+        
+
+        setTimeout(() => {
+            console.log(`[FIM] TERMINOU DE MOVER FRENTE`);
+            resolve(); // Aqui é onde o Scene3D avisa: "Terminei! Pode mandar a próxima"
+        }, value * 1000);
+    });
+  }
+
+  public moveBackward(value : number): Promise<void> {
+    return new Promise((resolve) => {
+        console.log(`[INÍCIO] INICIANDO MOVIMENTO TRÁS: ${value} unidades`);
+        
+        setTimeout(() => {
+            console.log(`[FIM] TERMINOU DE MOVER TRÁS`);
+            resolve(); 
+        }, value * 2000); // Demora 1 segundo vezes a quantidade dos blocos
+    });
+  }
+
 
 
   public dispose() {

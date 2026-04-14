@@ -5,21 +5,31 @@ export class ASTEngine {
   
   // O asterisco (*) diz que ela é uma Função Geradora.
   // Ela não retorna uma Array (lista), retorna um "Iterador" pausável.
-  public static *executeAST(nodes: CommandNode[]): IterableIterator<FlatAction> {
+  public static *executeAST(
+    nodes: CommandNode[],
+    conditionVerification: (condition: string, diretion: string) => boolean
+  ): IterableIterator<FlatAction> {
     for (const node of nodes) {
       
       // SE FOR UM LOOP:
       if ('times' in node) {
         for (let i = 0; i < (node as RepeatCmd).times; i++) {
           // O yield* (com asterisco) diz para o iterador repassar a extração para os filhos
-          yield* this.executeAST((node as RepeatCmd).commands);
+          yield* this.executeAST((node as RepeatCmd).commands, conditionVerification);
         }
       }
       
       // SE FOR UM IF:
       else if ('condition' in node) {
-        // (No futuro, aqui colocaremos um 'if' testando o mapa antes de entrar)
-        yield* this.executeAST((node as IfCmd).commands);
+        
+        const ifNode = (node as IfCmd);
+        
+        const conditionResponse = conditionVerification(ifNode.condition, ifNode.direction); 
+      
+        if (conditionResponse) {
+           yield* this.executeAST((node as IfCmd).commands, conditionVerification);
+        }
+      
       }
       
       // SE FOR UM COMANDO RETA (EX: AVANCA):

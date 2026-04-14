@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import './index.css';
 import RoverScene from './components/RoverScene.tsx';
+import type { CompilerResult } from './engineAST/models/CompilerResultType.ts';
+import type { CommandNode } from './engineAST/models/CMDTypes.ts';
 
 // ----------------------------------------------------
 // Dica Profissional: Expandimos os Tipos globais do TypeScript (Window)
@@ -15,8 +17,9 @@ declare global {
 
 function App() {
   const [code, setCode] = useState<string>("AVANCA 1\nREPEAT 3 {\n  RECUA 1\n}");
-  const [output, setOutput] = useState<string>("// Aguardando carregamento do compilador...");
-  
+  // const [output, setOutput] = useState<string>("// Aguardando carregamento do compilador...");
+  const [activeCommands, setActiveCommands] = useState<CommandNode[]>([])
+
   // Novo estado para sabermos se o compilador já "subiu" na memória
   const [isWasmLoaded, setIsWasmLoaded] = useState<boolean>(false);
 
@@ -24,7 +27,7 @@ function App() {
   useEffect(() => {
     
     if (!window.Go) {
-       setOutput("// ERRO: wasm_exec.js não foi encontrado no index.html");
+       console.log("// ERRO: wasm_exec.js não foi encontrado no index.html");
        return;
     }
 
@@ -35,33 +38,51 @@ function App() {
       .then((result) => {
         go.run(result.instance); // Isso dispara aquela nossa func main() no Go!
         setIsWasmLoaded(true);
-        setOutput("// Compilador Artemis carregado e pronto para uso! 🚀\n");
+        console.log("// Compilador Artemis carregado e pronto para uso! 🚀\n");
       })
       .catch((err) => {
         console.error("Erro no WASM:", err);
-        setOutput("// Falha ao carregar o compilador. Olhe o Console (F12) para detalhes.");
+        console.log("// Falha ao carregar o compilador. Olhe o Console (F12) para detalhes.");
       });
   }, []);
 
   
-  const handleCompile = () => {
+  const handleCompile = (): CompilerResult | null => {
     if (!isWasmLoaded) {
-      setOutput("Erro: Compilador não preparado. Tente novamente em instantes.");
+      console.log("Erro: Compilador não preparado. Tente novamente em instantes.");
       return;
     }
 
     try {
     
-      // Mandamos a string lá pra dentro do Go, que processa tudo e devolve a String do JSON!
-      const jsonResult = window.artemisCompile(code);
-      setOutput(jsonResult);
-      console.log(jsonResult)
+      const jsonResultString = window.artemisCompile(code);
+      // Aqui transformamos o texto que o Go gerou em uma lista Real do Javascript!
+      const astNodes = JSON.parse(jsonResultString);
+      
+      // Imprime bonitinho na tela como string pro usuário ver o q foi gerado
+      console.log(JSON.stringify(astNodes, null, 2));
+      return astNodes;
     
     } catch (error) {
-      setOutput(`Erro inesperado durante compilação: ${error}`);
+      console.log(`Erro inesperado durante compilação: ${error}`);
     }
 
   };
+
+    
+ const handleRun = () => {
+    
+  const compileResponse = handleCompile();
+    
+    if (!compileResponse || !compileResponse.success) {
+       console.warn("Falha na compilação, o motor não vai iniciar.");
+       return; 
+    }
+    
+    setActiveCommands(compileResponse.comands)
+    // console.log(compileResponse.comands)
+  
+  }
 
 
 
@@ -78,7 +99,7 @@ function App() {
         <div className="sidebar">
           <div className="editor-header">
             <h2>💻 Fonte (Artemis Lang)</h2>
-            <button className="compile-btn" onClick={handleCompile} disabled={!isWasmLoaded}>
+            <button className="compile-btn" onClick={handleRun} disabled={!isWasmLoaded}>
               {isWasmLoaded ? "Processar Rota" : "Carregando..."}
             </button>
           </div>
@@ -96,7 +117,7 @@ function App() {
             <h2>🗺️ Simulação Rover 3D</h2>
           </div>
           <div className="scene-wrapper">
-             <RoverScene />
+             <RoverScene commands={activeCommands} />
           </div>
         </div>
 
