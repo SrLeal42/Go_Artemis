@@ -1,6 +1,7 @@
 import * as B from '@babylonjs/core';
 
 import { Camera } from './scripts/Camera';
+import { Terrain } from './scripts/terrain/Terrain';
 
 export class Scene3D {
 
@@ -9,6 +10,8 @@ export class Scene3D {
   public scene : B.Scene;
 
   public camera : Camera;
+
+  public terrain : Terrain;
 
   private resizeObserver: ResizeObserver | null = null;
 
@@ -45,12 +48,9 @@ export class Scene3D {
     const light = new B.HemisphericLight("light", new B.Vector3(0, 1, 0), scene);
     light.intensity = 0.8;
 
-    // 5. O Chão (Grid Virtual 10x10) usando subdivisions para cortar o plano
-    const ground = B.MeshBuilder.CreateGround("ground", { width: 35, height: 35, subdivisions: 7 }, scene);
-    const groundMat = new B.StandardMaterial("groundMat", scene);
-    groundMat.wireframe = true; // Transformamos em um "Aramado" para parecer o Grid tático!
-    groundMat.diffuseColor = new B.Color3(0.2, 0.4, 0.8); // Um azul digital 
-    ground.material = groundMat;
+
+    this.terrain = new Terrain(this.scene);
+    this.terrain.initialize();
 
     // 6. O Rover Primitivo (Nosso Cubo Laranja)
     const rover = B.MeshBuilder.CreateBox("rover", { size: 1 }, scene);
