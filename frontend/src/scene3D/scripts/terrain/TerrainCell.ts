@@ -17,8 +17,8 @@ export class TerrainCell {
     public collapsed: boolean;
     public chosenTile: number | null;
 
-    public cellSize = 5;
-    public meshSize = this.cellSize * .95;//* .5;
+    public static cellSize = 5;
+    public meshSize = TerrainCell.cellSize * .95;//* .5;
     public mesh!: B.Mesh | null;
     public meshNode!: B.TransformNode | null;
 
@@ -46,7 +46,7 @@ export class TerrainCell {
 
         // this.collapsed = false;
         // this.chosenTile = null;
-        
+
         // Pega todas as chaves numéricas do Enum (0, 1, 2 no caso)
         const possiveisTipos = [TerrainTypes.TRANSPONIVEL, TerrainTypes.OBSTACULO, TerrainTypes.OBJETIVO]; 
 
@@ -87,7 +87,7 @@ export class TerrainCell {
         this.mesh = plane;
         this.meshNode = root;
 
-        const position = new B.Vector3((this.x * this.cellSize ), (this.y * this.cellSize ), (this.z * this.cellSize ))
+        const position = new B.Vector3((this.x * TerrainCell.cellSize ), (this.y * TerrainCell.cellSize ), (this.z * TerrainCell.cellSize ))
         this.meshNode.rotation = new B.Vector3((Math.PI/2), 0, 0);
         this.meshNode.scaling = new B.Vector3(this.meshSize, this.meshSize, this.meshSize);
         this.meshNode.position = position;

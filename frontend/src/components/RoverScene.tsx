@@ -37,10 +37,10 @@ export function RoverScene({ commands }) {
                 // até o resolve() lá no Scene3D ser disparado e a promise terminar!
                 switch(acao.action) {
                   case "AVANCA":
-                    await sceneInstance.current?.moveForward(acao.value);
+                    await sceneInstance.current?.rover.moveForward(acao.value);
                     break;
                   case "RECUA":
-                    await sceneInstance.current?.moveBackward(acao.value);
+                    await sceneInstance.current?.rover.moveBackward(acao.value);
                     break;
                 }
             }

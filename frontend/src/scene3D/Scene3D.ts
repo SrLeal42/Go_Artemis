@@ -2,6 +2,7 @@ import * as B from '@babylonjs/core';
 
 import { Camera } from './scripts/Camera';
 import { Terrain } from './scripts/terrain/Terrain';
+import { Rover } from './scripts/rover/Rover';
 
 export class Scene3D {
 
@@ -12,6 +13,8 @@ export class Scene3D {
   public camera : Camera;
 
   public terrain : Terrain;
+
+  public rover : Rover;
 
   private resizeObserver: ResizeObserver | null = null;
 
@@ -49,18 +52,12 @@ export class Scene3D {
     light.intensity = 0.8;
 
 
-    this.terrain = new Terrain(this.scene);
+    this.terrain = new Terrain(scene);
     this.terrain.initialize();
 
-    // 6. O Rover Primitivo (Nosso Cubo Laranja)
-    const rover = B.MeshBuilder.CreateBox("rover", { size: 1 }, scene);
-    rover.position.y = 0.5; // Sobe o cubo 0.5 para que ele "pise" no chão e não afunde metade 
-    
-    const roverMat = new B.StandardMaterial("roverMat", scene);
-    roverMat.diffuseColor = new B.Color3(0.9, 0.4, 0.1); 
-    rover.material = roverMat;
+    this.rover = new Rover(scene, 0, 0);
 
-    this.camera = new Camera(scene, this.canvas, rover)
+    this.camera = new Camera(scene, this.canvas, this.rover.pivot)
 
     return scene;
 
@@ -71,32 +68,6 @@ export class Scene3D {
     console.log(cond, dir)
     return false;
   }
-
-
-  public moveForward(value : number): Promise<void> {
-    return new Promise((resolve) => {
-        console.log(`[INÍCIO] INICIANDO MOVIMENTO FRENTE: ${value} unidades`);
-        
-
-        setTimeout(() => {
-            console.log(`[FIM] TERMINOU DE MOVER FRENTE`);
-            resolve(); // Aqui é onde o Scene3D avisa: "Terminei! Pode mandar a próxima"
-        }, value * 1000);
-    });
-  }
-
-  public moveBackward(value : number): Promise<void> {
-    return new Promise((resolve) => {
-        console.log(`[INÍCIO] INICIANDO MOVIMENTO TRÁS: ${value} unidades`);
-        
-        setTimeout(() => {
-            console.log(`[FIM] TERMINOU DE MOVER TRÁS`);
-            resolve(); 
-        }, value * 2000); // Demora 1 segundo vezes a quantidade dos blocos
-    });
-  }
-
-
 
   public dispose() {
     if (this.resizeObserver) {
