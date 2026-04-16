@@ -4,6 +4,9 @@ import { Camera } from './scripts/Camera';
 import { Terrain } from './scripts/terrain/Terrain';
 import { Rover } from './scripts/rover/Rover';
 
+import { TerrainTypes } from './scripts/terrain/TerrainTypes';
+import { RoverRelativeDirection } from './scripts/rover/RoverDirection';
+
 export class Scene3D {
 
   public canvas : HTMLCanvasElement
@@ -66,6 +69,23 @@ export class Scene3D {
 
   public checkConditionOnMap(cond: string, dir: string): boolean {
     console.log(cond, dir)
+    const relativeDir = RoverRelativeDirection[dir as keyof typeof RoverRelativeDirection];
+    // Pega a coordenada da célula ao lado do Rover
+    const [checkX, checkZ] = this.rover.getAdjacentGridPosition(relativeDir);
+    // Consulta o terreno nessa posição
+    const cellKey = `${checkX},0,${checkZ}`;
+    const cell = this.terrain.terrainGrid.get(cellKey);
+    
+    if (!cell) return false; // Fora do mapa
+    
+    // Verifica a condição
+    switch(cond){
+      case "OBSTACULO":
+        return cell.chosenTile === TerrainTypes.OBSTACULO;
+      case "OBJETIVO":
+        return cell.chosenTile === TerrainTypes.OBJETIVO;
+    }
+
     return false;
   }
 

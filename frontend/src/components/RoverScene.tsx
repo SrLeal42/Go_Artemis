@@ -3,6 +3,9 @@ import { Scene3D } from '../scene3D/Scene3D';
 
 import { ASTEngine } from '../engineAST/scripts/ASTEngine';
 
+import type { FlatAction } from '../engineAST/models/FlatActionType';
+import { RoverRelativeDirection } from '../scene3D/scripts/rover/RoverDirection';
+
 export function RoverScene({ commands }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -31,7 +34,7 @@ export function RoverScene({ commands }) {
                     break;
                 }
                 
-                const acao = step.value;
+                const acao = step.value as FlatAction;
                 
                 // O [await] AQUI é a cereja do bolo. O laço "while" vai CONGELAR
                 // até o resolve() lá no Scene3D ser disparado e a promise terminar!
@@ -41,6 +44,10 @@ export function RoverScene({ commands }) {
                     break;
                   case "RECUA":
                     await sceneInstance.current?.rover.moveBackward(acao.value);
+                    break;
+                  case "GIRA":
+                    const giraDir = RoverRelativeDirection[acao.direction as keyof typeof RoverRelativeDirection];
+                    await sceneInstance.current?.rover.turn(giraDir);
                     break;
                 }
             }

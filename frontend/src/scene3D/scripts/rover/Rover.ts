@@ -1,15 +1,13 @@
 import * as B from '@babylonjs/core';
 
 import { TerrainCell } from '../terrain/TerrainCell';
-import { RoverDirection } from './RoverDirection';
+import { RoverWorldDirection, RoverRelativeDirection } from './RoverDirection';
 
 import { delay } from '../utilities/Utilities';
 
 export class Rover {
 
     public scene: B.Scene;
-
-
 
     public gridX: number;
     public gridZ: number;
@@ -19,7 +17,14 @@ export class Rover {
     public roverSize = 1;
     public roverMesh? : B.Mesh;
 
-    public facingDirection: RoverDirection = RoverDirection.NORTH;
+    public facingDirection: RoverWorldDirection = RoverWorldDirection.NORTH;
+    // Tabela fixa: para cada direção absoluta, qual o deslocamento no grid (deltaX, deltaZ)
+    private static readonly DIRECTION_OFFSETS: Record<number, [number, number]> = {
+        [RoverWorldDirection.NORTH]: [0, -1],
+        [RoverWorldDirection.EAST]:  [-1, 0],
+        [RoverWorldDirection.SOUTH]: [0,  1],
+        [RoverWorldDirection.WEST]:  [1,  0],
+    };
 
     public isInicialized = false;
 
@@ -54,6 +59,15 @@ export class Rover {
         roverMat.emissiveColor = new B.Color3(0.9, 0.4, 0.1); 
         rover.material = roverMat;
 
+        // Uma caixa placeholder apenas para poder ver onde esta a frente do Rover
+        const frenteRover = B.MeshBuilder.CreateBox("frenteRover", {}, this.scene);
+        const frenteRoverMat = new B.StandardMaterial("frenteRoverMat", this.scene);
+        frenteRoverMat.disableLighting = true;
+        frenteRoverMat.emissiveColor = new B.Color3(0.1, 0.1, 0.1); 
+        frenteRover.material = frenteRoverMat;
+        frenteRover.position.z = -1;
+        frenteRover.parent = rover;
+
         rover.parent = pivot;
         
         this.pivot = pivot;
@@ -79,23 +93,37 @@ export class Rover {
         }
     }
 
+    
+
+    public getGridPosition(): [number, number] {
+        return [this.gridX, this.gridZ]
+    } 
+
+    public getAdjacentGridPosition(relativeSide: RoverRelativeDirection): [number, number] {
+    
+        // Mapeia o lado relativo para um "offset de rotação" no círculo de direções
+        // const relativeOffset: Record<string, number> = {
+        //     "FRENTE":   0,
+        //     "DIREITA":  1,
+        //     "TRAS":     2,
+        //     "ESQUERDA": 3,
+        // };
+        // Calcula a direção absoluta no mundo
+        const absoluteDir = (this.facingDirection + relativeSide) % 4;
+        // Consulta a tabela de offsets
+        const [dx, dz] = Rover.DIRECTION_OFFSETS[absoluteDir];
+        return [this.gridX + dx, this.gridZ + dz];
+    }
+
+
     public async moveForward(value: number): Promise<void> {
         console.log(`[INÍCIO] INICIANDO MOVIMENTO FRENTE: ${value} unidades`);
 
         for (let i = 0; i < value; i++) {
-            let targetX = this.gridX;
-            let targetZ = this.gridZ;
-            // Calcula o destino baseado para onde ele tá olhando
-            switch (this.facingDirection) {
-                case RoverDirection.NORTH: targetZ -= 1; break;
-                case RoverDirection.SOUTH: targetZ += 1; break;
-                case RoverDirection.EAST:  targetX -= 1; break;
-                case RoverDirection.WEST:  targetX += 1; break;
-            }
-
+            const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.FRENTE);
             this.setGridPosition(targetX, targetZ);
 
-            await delay(1000); // espera 1 segundo antes da próxima iteração
+            await delay(1000);
         }
 
         console.log(`[FIM] TERMINOU DE MOVER FRENTE`);
@@ -106,26 +134,36 @@ export class Rover {
         console.log(`[INÍCIO] INICIANDO MOVIMENTO TRÁS: ${value} unidades`);
         
         for (let i = 0; i < value; i++) {
-            let targetX = this.gridX;
-            let targetZ = this.gridZ;
-            // Calcula o destino baseado para onde ele tá olhando
-            switch (this.facingDirection) {
-                case RoverDirection.NORTH: targetZ += 1; break;
-                case RoverDirection.SOUTH: targetZ -= 1; break;
-                case RoverDirection.EAST:  targetX += 1; break;
-                case RoverDirection.WEST:  targetX -= 1; break;
-            }
+            const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.TRAS);
+            this.setGridPosition(targetX, targetZ);
 
 
             this.setGridPosition(targetX, targetZ);
 
-            await delay(2000); // espera 1 segundo antes da próxima iteração
+            await delay(2000);
         }
 
         console.log(`[FIM] TERMINOU DE MOVER TRÁS`);
 
     }
 
+
+    public async turn(relativeDir: RoverRelativeDirection): Promise<void> {
+        console.log(`[INÍCIO] INICIANDO GIRO: ${relativeDir}`);
+        const arrayRoverDirection = Object.values(RoverWorldDirection);
+        
+        // DIREITA (1): (facing + 1) % 4
+        // ESQUERDA (3): (facing + 3) % 4
+        this.facingDirection = arrayRoverDirection[(this.facingDirection + relativeDir) % 4];
+        
+        if (this.pivot) {
+            this.pivot.rotation.y = this.facingDirection * (Math.PI / 2);
+        }
+        
+        await delay(1000);
+
+        console.log(`[FIM] TERMINOU DE GIRAR. Nova mira: ${this.facingDirection}`);
+    }
 
 
 }

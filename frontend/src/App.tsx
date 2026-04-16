@@ -16,7 +16,7 @@ declare global {
 }
 
 function App() {
-  const [code, setCode] = useState<string>("AVANCA 1\nREPEAT 3 {\n  RECUA 1\n}");
+  const [code, setCode] = useState<string>("REPEAT 5 {\n REPEAT 4 {\n IF OBJETIVO FRENTE { \n GIRA DIREITA\n }\n }\n AVANCA 1\n}");
   // const [output, setOutput] = useState<string>("// Aguardando carregamento do compilador...");
   const [activeCommands, setActiveCommands] = useState<CommandNode[]>([])
 
