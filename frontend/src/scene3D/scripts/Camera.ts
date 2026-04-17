@@ -25,7 +25,7 @@ export class Camera {
         this.arcCamera.setTarget(roverPivot); // Fixa os olhos no carrinho!
         
         this.arcCamera.lowerRadiusLimit = 4;
-        this.arcCamera.upperBetaLimit = (Math.PI / 2) * 0.9; 
+        // this.arcCamera.upperBetaLimit = (Math.PI / 2) * 0.9; 
 
         // Liga os crontoles do mouse na câmera atual
         this.arcCamera.attachControl(this.canvas, true);
@@ -33,7 +33,7 @@ export class Camera {
         this.topDownCamera = new B.UniversalCamera("skyCamera", new B.Vector3(0, this.topDownCameraHeight, 0), scene);
         this.topDownCamera.setTarget(B.Vector3.Zero()); // Olha direto pro centro do chão
         
-        this.scene.activeCamera = this.topDownCamera; // this.arcCamera
+        this.scene.activeCamera =  this.topDownCamera; // this.arcCamera
         
     }
 

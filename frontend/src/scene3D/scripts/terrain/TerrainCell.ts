@@ -1,4 +1,7 @@
 import * as B from '@babylonjs/core';
+
+import { ModelManager } from '../managers/ModelManager';
+
 import { TerrainTypes } from './TerrainTypes';
 
 export class TerrainCell {
@@ -19,7 +22,7 @@ export class TerrainCell {
 
     public static cellSize = 5;
     public meshSize = TerrainCell.cellSize * .95;//* .5;
-    public mesh!: B.Mesh | null;
+    public mesh!: B.AbstractMesh | null;
     public meshNode!: B.TransformNode | null;
 
     constructor(
@@ -63,35 +66,28 @@ export class TerrainCell {
     }
 
     public changeMesh(/* key:string */) : void {
-    
         this.disposeMesh();
-
-        const root = new B.TransformNode(`Root_Cell_${this.x},${this.z}`, this.scene);
-
-        const plane = B.MeshBuilder.CreatePlane(`Plane_Cell_${this.x},${this.z}`, {}, this.scene)
-        const planeMat = new B.StandardMaterial("cellMat", this.scene);
-        planeMat.disableLighting = true;
-
-        if (this.chosenTile === TerrainTypes.TRANSPONIVEL) {
-            planeMat.emissiveColor = new B.Color3(0.2, 0.4, 0.8); // Azul (Caminho livre)
-        } else if (this.chosenTile === TerrainTypes.OBSTACULO) {
-            planeMat.emissiveColor = new B.Color3(0.8, 0.2, 0.2); // Vermelho (Parede/Pedra)
-        } else if (this.chosenTile === TerrainTypes.OBJETIVO) {
-            planeMat.emissiveColor = new B.Color3(0.2, 0.8, 0.2); // Verde (Chegada)
+        
+        const modelManager = ModelManager.getInstance();
+        
+        let masterKey: string;
+        
+        switch (this.chosenTile) {
+            case TerrainTypes.OBSTACULO: masterKey = "terrain_obstaculo"; break;
+            case TerrainTypes.OBJETIVO:  masterKey = "terrain_objetivo";  break;
+            default:                     masterKey = "terrain_transponivel"; break;
         }
+        
+        const instance = modelManager.createInstance(masterKey, `cell_${this.x}_${this.z}`);
+        // console.log(instance.rotation)
+        instance.scaling = new B.Vector3(this.meshSize, this.meshSize, this.meshSize);
+        instance.position = new B.Vector3(
+            this.x * TerrainCell.cellSize,
+            this.y * TerrainCell.cellSize,
+            this.z * TerrainCell.cellSize
+        );
 
-        plane.material = planeMat;
-
-        plane.parent = root;
-
-        this.mesh = plane;
-        this.meshNode = root;
-
-        const position = new B.Vector3((this.x * TerrainCell.cellSize ), (this.y * TerrainCell.cellSize ), (this.z * TerrainCell.cellSize ))
-        this.meshNode.rotation = new B.Vector3((Math.PI/2), 0, 0);
-        this.meshNode.scaling = new B.Vector3(this.meshSize, this.meshSize, this.meshSize);
-        this.meshNode.position = position;
-
+        this.mesh = instance;
         
     }
 

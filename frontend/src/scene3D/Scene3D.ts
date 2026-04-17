@@ -4,6 +4,9 @@ import { Camera } from './scripts/Camera';
 import { Terrain } from './scripts/terrain/Terrain';
 import { Rover } from './scripts/rover/Rover';
 
+import { MaterialManager } from './scripts/managers/MaterialManager';
+import { ModelManager } from './scripts/managers/ModelManager';
+
 import { TerrainTypes } from './scripts/terrain/TerrainTypes';
 import { RoverRelativeDirection } from './scripts/rover/RoverDirection';
 
@@ -53,6 +56,9 @@ export class Scene3D {
     // 4. Luz Diurna
     const light = new B.HemisphericLight("light", new B.Vector3(0, 1, 0), scene);
     light.intensity = 0.8;
+
+    MaterialManager.initialize(scene);
+    ModelManager.initialize(scene);
 
 
     this.terrain = new Terrain(scene);
