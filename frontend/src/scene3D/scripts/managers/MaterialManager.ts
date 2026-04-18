@@ -1,31 +1,15 @@
-// scene3D/scripts/managers/MaterialManager.ts
 import * as B from '@babylonjs/core';
-import { TerrainTypes } from '../terrain/TerrainTypes';
 
-export class MaterialManager {
-
-    private static instance: MaterialManager | null = null;
+class MaterialManager {
 
     private scene: B.Scene;
     private materials: Map<string, B.Material> = new Map();
 
-    private constructor(scene: B.Scene) {
-        this.scene = scene;
+
+    public async initialize(scene: B.Scene): Promise<void> {
+        this.scene = scene;        
         this.initializeMaterials();
-    }
 
-    public static initialize(scene: B.Scene): MaterialManager {
-        if (!MaterialManager.instance) {
-            MaterialManager.instance = new MaterialManager(scene);
-        }
-        return MaterialManager.instance;
-    }
-
-    public static getInstance(): MaterialManager {
-        if (!MaterialManager.instance) {
-            throw new Error("MaterialManager não foi inicializado. Chame initialize() primeiro.");
-        }
-        return MaterialManager.instance;
     }
 
     // Registra todos os materiais do jogo aqui
@@ -67,13 +51,7 @@ export class MaterialManager {
         return mat;
     }
 
-    // Atalho útil: pega o material pelo TerrainType diretamente
-    public getTerrainMaterial(type: number): B.Material {
-        switch (type) {
-            case TerrainTypes.TRANSPONIVEL: return this.getMaterial("terrain_transponivel");
-            case TerrainTypes.OBSTACULO:    return this.getMaterial("terrain_obstaculo");
-            case TerrainTypes.OBJETIVO:     return this.getMaterial("terrain_objetivo");
-            default: return this.getMaterial("terrain_transponivel");
-        }
-    }
 }
+
+
+export const MaterialInstance = new MaterialManager();

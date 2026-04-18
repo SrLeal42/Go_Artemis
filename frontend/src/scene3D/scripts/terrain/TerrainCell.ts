@@ -1,6 +1,6 @@
 import * as B from '@babylonjs/core';
 
-import { ModelManager } from '../managers/ModelManager';
+import { ModelInstance } from '../managers/ModelManager';
 
 import { TerrainTypes } from './TerrainTypes';
 
@@ -68,7 +68,7 @@ export class TerrainCell {
     public changeMesh(/* key:string */) : void {
         this.disposeMesh();
         
-        const modelManager = ModelManager.getInstance();
+        // const modelManager = ModelManager.getInstance();
         
         let masterKey: string;
         
@@ -78,8 +78,8 @@ export class TerrainCell {
             default:                     masterKey = "terrain_transponivel"; break;
         }
         
-        const instance = modelManager.createInstance(masterKey, `cell_${this.x}_${this.z}`);
-        // console.log(instance.rotation)
+        const instance = ModelInstance.createInstance(masterKey, `cell_${this.x}_${this.z}`);
+
         instance.scaling = new B.Vector3(this.meshSize, this.meshSize, this.meshSize);
         instance.position = new B.Vector3(
             this.x * TerrainCell.cellSize,

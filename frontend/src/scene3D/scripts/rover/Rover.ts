@@ -3,6 +3,8 @@ import * as B from '@babylonjs/core';
 import { TerrainCell } from '../terrain/TerrainCell';
 import { RoverWorldDirection, RoverRelativeDirection } from './RoverDirection';
 
+import { ModelInstance } from '../managers/ModelManager';
+
 import { delay } from '../utilities/Utilities';
 
 export class Rover {
@@ -15,7 +17,7 @@ export class Rover {
     public pivot : B.TransformNode;
     
     public roverSize = 1;
-    public roverMesh? : B.Mesh;
+    public roverMesh? : B.InstancedMesh;
 
     public facingDirection: RoverWorldDirection = RoverWorldDirection.NORTH;
     // Tabela fixa: para cada direção absoluta, qual o deslocamento no grid (deltaX, deltaZ)
@@ -52,19 +54,11 @@ export class Rover {
 
         const pivot = new B.TransformNode(`Pivot_Rover`, this.scene);
 
-        const rover = B.MeshBuilder.CreateBox("rover", {}, this.scene);
-        // rover.position.y = 0.5; // Sobe o cubo 0.5 para que ele "pise" no chão e não afunde metade 
-        const roverMat = new B.StandardMaterial("roverMat", this.scene);
-        roverMat.disableLighting = true;
-        roverMat.emissiveColor = new B.Color3(0.9, 0.4, 0.1); 
-        rover.material = roverMat;
+        const rover = ModelInstance.createInstance("rover_body", "Rover");
 
         // Uma caixa placeholder apenas para poder ver onde esta a frente do Rover
-        const frenteRover = B.MeshBuilder.CreateBox("frenteRover", {}, this.scene);
-        const frenteRoverMat = new B.StandardMaterial("frenteRoverMat", this.scene);
-        frenteRoverMat.disableLighting = true;
-        frenteRoverMat.emissiveColor = new B.Color3(0.1, 0.1, 0.1); 
-        frenteRover.material = frenteRoverMat;
+        const frenteRover = ModelInstance.createInstance("rover_frente", "Rover_frente")
+
         frenteRover.position.z = -1;
         frenteRover.parent = rover;
 
