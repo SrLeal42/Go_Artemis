@@ -3,6 +3,7 @@ import * as B from '@babylonjs/core';
 import { Camera } from './scripts/Camera';
 import { Terrain } from './scripts/terrain/Terrain';
 import { Rover } from './scripts/rover/Rover';
+import { Goal } from './scripts/Goal';
 
 import { MaterialInstance } from './scripts/managers/MaterialManager';
 import { ModelInstance } from './scripts/managers/ModelManager';
@@ -19,6 +20,8 @@ export class Scene3D {
   public camera : Camera;
 
   public terrain : Terrain;
+
+  public goal : Goal;
 
   public rover : Rover;
 
@@ -62,6 +65,9 @@ export class Scene3D {
     this.terrain = new Terrain(scene);
     this.terrain.initialize();
 
+    const goalPos = this.terrain.goalPosition;
+    this.goal = new Goal(scene, goalPos.x, goalPos.z);
+
     const spawn = this.terrain.spawnPosition;
     this.rover = new Rover(scene, spawn.x, spawn.z);
 
@@ -72,8 +78,14 @@ export class Scene3D {
   }
 
 
+  public checkGoalReached(): boolean {
+    const [rx, rz] = this.rover.getGridPosition();
+    return this.goal.isAtPosition(rx, rz);
+  }
+
+
   public checkConditionOnMap(cond: string, dir: string): boolean {
-    console.log(cond, dir)
+
     const relativeDir = RoverRelativeDirection[dir as keyof typeof RoverRelativeDirection];
     // Pega a coordenada da célula ao lado do Rover
     const [checkX, checkZ] = this.rover.getAdjacentGridPosition(relativeDir);
@@ -93,6 +105,7 @@ export class Scene3D {
 
     return false;
   }
+
 
   public dispose() {
     if (this.resizeObserver) {

@@ -36,6 +36,11 @@ class ModelManager {
         masterObjetivo.setEnabled(false);
         this.masterMeshes.set("terrain_objetivo", masterObjetivo);
 
+        const masterObjetivoCube = B.MeshBuilder.CreateBox("master_objetivo_cubo", {}, this.scene);
+        masterObjetivoCube.material = MaterialInstance.getMaterial("objetivo_cubo");
+        masterObjetivoCube.setEnabled(false);
+        this.masterMeshes.set("objetivo_cubo", masterObjetivoCube);
+
         const masterSurgimento = B.MeshBuilder.CreatePlane("master_surgimento", {}, this.scene)
         masterSurgimento.material = MaterialInstance.getMaterial("terrain_surgimento");
         masterSurgimento.rotation = new B.Vector3(Math.PI/2, 0, 0);

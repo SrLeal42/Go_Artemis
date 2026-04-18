@@ -30,6 +30,11 @@ class MaterialManager {
         matObjetivo.emissiveColor = new B.Color3(0.2, 0.8, 0.2);
         this.materials.set("terrain_objetivo", matObjetivo);
 
+        const matObjetivoCubo = new B.StandardMaterial("mat_objetivo_cubo", this.scene);
+        matObjetivoCubo.disableLighting = true;
+        matObjetivoCubo.emissiveColor = new B.Color3(0, 1, 0);
+        this.materials.set("objetivo_cubo", matObjetivoCubo);
+
         const matSurgimento = new B.StandardMaterial("mat_surgimento", this.scene);
         matSurgimento.disableLighting = true;
         matSurgimento.emissiveColor = new B.Color3(0.9, 0.8, 0.2);

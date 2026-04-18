@@ -25,12 +25,14 @@ export function RoverScene({ commands }) {
                 return sceneInstance.current?.checkConditionOnMap(cond, dir) ?? false;
             });
             
+            let goalReached = false;
+
             // Fica repetindo infinitamente, a não ser que step.done acabe ou isCancelled ative
-            while (!isCancelled) {
+            while (!isCancelled && !goalReached) {
                 const step = engineIterator.next();
                 
                 if (step.done) {
-                    console.log("🏁 Fundo do poço, trajetório completa!");
+                    console.log("🏁 Trajetório completa!");
                     break;
                 }
                 
@@ -50,6 +52,12 @@ export function RoverScene({ commands }) {
                     await sceneInstance.current?.rover.turn(giraDir);
                     break;
                 }
+        
+              if (sceneInstance.current?.checkGoalReached()) {
+                  console.log("🎯 Objetivo alcançado!");
+                  goalReached = true;
+              }
+
             }
         };
         

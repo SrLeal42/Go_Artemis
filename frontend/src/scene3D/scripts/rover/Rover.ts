@@ -111,7 +111,6 @@ export class Rover {
 
 
     public async moveForward(value: number): Promise<void> {
-        console.log(`[INÍCIO] INICIANDO MOVIMENTO FRENTE: ${value} unidades`);
 
         for (let i = 0; i < value; i++) {
             const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.FRENTE);
@@ -120,13 +119,11 @@ export class Rover {
             await delay(1000);
         }
 
-        console.log(`[FIM] TERMINOU DE MOVER FRENTE`);
     }
 
     
     public async moveBackward(value : number): Promise<void> {
-        console.log(`[INÍCIO] INICIANDO MOVIMENTO TRÁS: ${value} unidades`);
-        
+
         for (let i = 0; i < value; i++) {
             const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.TRAS);
             this.setGridPosition(targetX, targetZ);
@@ -137,13 +134,10 @@ export class Rover {
             await delay(2000);
         }
 
-        console.log(`[FIM] TERMINOU DE MOVER TRÁS`);
-
     }
 
 
     public async turn(relativeDir: RoverRelativeDirection): Promise<void> {
-        console.log(`[INÍCIO] INICIANDO GIRO: ${relativeDir}`);
         const arrayRoverDirection = Object.values(RoverWorldDirection);
         
         // DIREITA (1): (facing + 1) % 4
@@ -156,7 +150,6 @@ export class Rover {
         
         await delay(1000);
 
-        console.log(`[FIM] TERMINOU DE GIRAR. Nova mira: ${this.facingDirection}`);
     }
 
 

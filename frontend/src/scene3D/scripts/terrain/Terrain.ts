@@ -17,6 +17,7 @@ export class Terrain {
 
     public wfcSolver : WFCSolver;
 
+    public goalPosition: { x: number; z: number } = { x: 0, z: 0 };
     public spawnPosition: { x: number; z: number } = { x: 0, z: 0 };
 
     public isInicialized = false;
@@ -77,6 +78,8 @@ export class Terrain {
 
                 if (tileType === TerrainTypes.SURGIMENTO) {
                     this.spawnPosition = { x, z };
+                } else if (tileType === TerrainTypes.OBJETIVO) {
+                    this.goalPosition = { x, z };
                 }
 
                 this.createCell(x, 0, z, tileType);
