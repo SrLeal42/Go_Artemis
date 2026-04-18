@@ -36,6 +36,12 @@ class ModelManager {
         masterObjetivo.setEnabled(false);
         this.masterMeshes.set("terrain_objetivo", masterObjetivo);
 
+        const masterSurgimento = B.MeshBuilder.CreatePlane("master_surgimento", {}, this.scene)
+        masterSurgimento.material = MaterialInstance.getMaterial("terrain_surgimento");
+        masterSurgimento.rotation = new B.Vector3(Math.PI/2, 0, 0);
+        masterSurgimento.setEnabled(false);
+        this.masterMeshes.set("terrain_surgimento", masterSurgimento);
+
         const masterRoverBody = B.MeshBuilder.CreateBox("master_rover_body", {}, this.scene);
         masterRoverBody.material = MaterialInstance.getMaterial("rover_body");
         masterRoverBody.setEnabled(false);

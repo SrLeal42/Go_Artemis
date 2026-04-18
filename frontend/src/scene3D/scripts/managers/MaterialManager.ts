@@ -30,6 +30,11 @@ class MaterialManager {
         matObjetivo.emissiveColor = new B.Color3(0.2, 0.8, 0.2);
         this.materials.set("terrain_objetivo", matObjetivo);
 
+        const matSurgimento = new B.StandardMaterial("mat_surgimento", this.scene);
+        matSurgimento.disableLighting = true;
+        matSurgimento.emissiveColor = new B.Color3(0.9, 0.8, 0.2);
+        this.materials.set("terrain_surgimento", matSurgimento);
+
         // --- Material do Rover ---
         const matRover = new B.StandardMaterial("mat_rover", this.scene);
         matRover.disableLighting = true;

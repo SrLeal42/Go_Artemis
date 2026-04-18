@@ -15,8 +15,6 @@ export class TerrainCell {
     public y: number;
     public z: number;
 
-    public possibleTilesStart: Set<number>;
-    public possibleTiles: Set<number>;
     public collapsed: boolean;
     public chosenTile: number | null;
 
@@ -27,54 +25,28 @@ export class TerrainCell {
 
     constructor(
         scene: B.Scene,
-        x: number,
-        y: number,
-        z: number,
-        // totalNumTiles: number,
+        x: number, y: number, z: number,
+        tileType: number,
     ) {
-
         this.scene = scene;
-
         this.x = x;
         this.y = y;
         this.z = z;
-
-        // const allPossibleNumericIDs = new Set<number>();
-        // for (let i = 0; i < totalNumTiles; i++) {
-        //     allPossibleNumericIDs.add(i);
-        // }
-
-        // this.possibleTilesStart = new Set(allPossibleNumericIDs);
-        // this.possibleTiles = new Set(allPossibleNumericIDs);
-
-        // this.collapsed = false;
-        // this.chosenTile = null;
-
-        // Pega todas as chaves numéricas do Enum (0, 1, 2 no caso)
-        const possiveisTipos = [TerrainTypes.TRANSPONIVEL, TerrainTypes.OBSTACULO, TerrainTypes.OBJETIVO]; 
-
-        // Sorteia um índice aleatório (0, 1 ou 2)
-        const indiceSorteado = Math.floor(Math.random() * possiveisTipos.length);
-
-        // Atribui o tipo sorteado à célula
-        this.chosenTile = possiveisTipos[indiceSorteado];
+        
+        this.chosenTile = tileType;
         this.collapsed = true;
-
-
         this.changeMesh();
-
     }
 
     public changeMesh(/* key:string */) : void {
         this.disposeMesh();
-        
-        // const modelManager = ModelManager.getInstance();
         
         let masterKey: string;
         
         switch (this.chosenTile) {
             case TerrainTypes.OBSTACULO: masterKey = "terrain_obstaculo"; break;
             case TerrainTypes.OBJETIVO:  masterKey = "terrain_objetivo";  break;
+            case TerrainTypes.SURGIMENTO:  masterKey = "terrain_surgimento";  break;
             default:                     masterKey = "terrain_transponivel"; break;
         }
         

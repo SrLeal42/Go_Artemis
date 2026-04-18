@@ -49,11 +49,9 @@ export class Scene3D {
 
   private createScene() : B.Scene {
 
-    // 2. Cria a Cena e pinta o fundo com a mesma cor do nosso painel escuro
     const scene = new B.Scene(this.engine);
     scene.clearColor = new B.Color4(0.06, 0.09, 0.16, 1);
 
-    // 4. Luz Diurna
     const light = new B.HemisphericLight("light", new B.Vector3(0, 1, 0), scene);
     light.intensity = 0.8;
 
@@ -64,7 +62,8 @@ export class Scene3D {
     this.terrain = new Terrain(scene);
     this.terrain.initialize();
 
-    this.rover = new Rover(scene, 0, 0);
+    const spawn = this.terrain.spawnPosition;
+    this.rover = new Rover(scene, spawn.x, spawn.z);
 
     this.camera = new Camera(scene, this.canvas, this.rover.pivot)
 
