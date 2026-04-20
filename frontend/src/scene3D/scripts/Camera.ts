@@ -13,7 +13,7 @@ export class Camera {
     public topDownCamera: B.UniversalCamera;
     public topDownCameraHeight = 60;
 
-    private isTopViewActive: boolean = false;
+    private isTopViewActive: boolean = true;
 
     constructor(scene: B.Scene, canvas: HTMLCanvasElement, roverPivot: B.TransformNode) {
         this.scene = scene;
@@ -22,18 +22,18 @@ export class Camera {
         this.roverPivot = roverPivot;
 
         this.arcCamera = new B.ArcRotateCamera("roverCamera", -Math.PI / 2, Math.PI / 3, this.arcCameraRadius, B.Vector3.Zero(), scene);
-        this.arcCamera.setTarget(roverPivot); // Fixa os olhos no carrinho!
+        this.arcCamera.setTarget(roverPivot);
         
         this.arcCamera.lowerRadiusLimit = 4;
-        // this.arcCamera.upperBetaLimit = (Math.PI / 2) * 0.9; 
+        this.arcCamera.upperBetaLimit = (Math.PI / 2) * 0.9; 
 
         // Liga os crontoles do mouse na câmera atual
         this.arcCamera.attachControl(this.canvas, true);
         
         this.topDownCamera = new B.UniversalCamera("skyCamera", new B.Vector3(0, this.topDownCameraHeight, 0), scene);
-        this.topDownCamera.setTarget(B.Vector3.Zero()); // Olha direto pro centro do chão
+        this.topDownCamera.setTarget(B.Vector3.Zero());
         
-        this.scene.activeCamera =  this.topDownCamera; // this.arcCamera
+        this.scene.activeCamera =  this.topDownCamera;
         
     }
 

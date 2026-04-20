@@ -152,6 +152,57 @@ body {
   position: relative;
 }
 
+
+.camera-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.switch-track {
+    width: 44px;
+    height: 24px;
+    background: #1e293b;
+    border-radius: 12px;
+    position: relative;
+    border: 1px solid #334155;
+    transition: background 0.3s ease;
+}
+
+.switch-thumb {
+    width: 18px;
+    height: 18px;
+    background: #60a5fa;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    transition: left 0.3s ease;
+}
+
+.switch-thumb.left {
+    left: 3px;
+}
+
+.switch-thumb.right {
+    left: 23px;
+}
+
+.switch-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.switch-label.active {
+    color: #60a5fa;
+}
+
+
+
+
 @media (max-width: 1024px) {
   .editor-layout {
      grid-template-columns: 1fr;

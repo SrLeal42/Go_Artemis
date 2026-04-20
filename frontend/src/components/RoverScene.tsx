@@ -1,9 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Scene3D } from '../scene3D/Scene3D';
 import { SimulationController } from '../scene3D/SimulationController';
 
+export interface RoverSceneHandle {
+    toggleCamera: () => void;
+}
 
-export function RoverScene({ commands }) {
+export const RoverScene = forwardRef<RoverSceneHandle, { commands: any }>(
+    ({ commands }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   // Aqui você armazena a sua Classe de forma Segura no React!
@@ -11,17 +15,25 @@ export function RoverScene({ commands }) {
 
   const controllerRef = useRef<SimulationController | null>(null);
 
-    useEffect(() => {
-      
-      if (!commands || commands.length === 0 || !controllerRef.current) return;
+
+  useImperativeHandle(ref, () => ({
+    toggleCamera: () => {
+        sceneInstance.current?.camera.toggleCamera();
+    },
+  }));
+
+
+  useEffect(() => {
     
-      controllerRef.current.run(commands);
-      
-      return () => {
-          controllerRef.current?.cancel();
-      };
+    if (!commands || commands.length === 0 || !controllerRef.current) return;
+  
+    controllerRef.current.run(commands);
     
-    }, [commands]); // Esse Effect roda SEMPRE que o App pai jogar novos comandos na prop
+    return () => {
+        controllerRef.current?.cancel();
+    };
+  
+  }, [commands]); // Esse Effect roda SEMPRE que o App pai jogar novos comandos na prop
 
 
   useEffect(() => {
@@ -49,7 +61,8 @@ export function RoverScene({ commands }) {
       />
     </div>
   );
-}
+
+});
 
 
 export default RoverScene;

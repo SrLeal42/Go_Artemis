@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './index.css';
 
 import RoverScene from './components/RoverScene.tsx';
@@ -6,6 +6,7 @@ import CodeEditor from './components/CodeEditor.tsx';
 
 import type { CompilerResult } from './engineAST/models/CompilerResultType.ts';
 import type { CommandNode } from './engineAST/models/CMDTypes.ts';
+import type { RoverSceneHandle } from './components/RoverScene.tsx';
 
 // ----------------------------------------------------
 // Dica Profissional: Expandimos os Tipos globais do TypeScript (Window)
@@ -20,11 +21,18 @@ declare global {
 
 function App() {
   const [code, setCode] = useState<string>("REPEAT 5 {\n REPEAT 4 {\n IF OBSTACULO FRENTE { \n GIRA DIREITA\n }\n }\n AVANCA 1\n}");
-  // const [output, setOutput] = useState<string>("// Aguardando carregamento do compilador...");
+
   const [activeCommands, setActiveCommands] = useState<CommandNode[]>([])
 
   // Novo estado para sabermos se o compilador já "subiu" na memória
   const [isWasmLoaded, setIsWasmLoaded] = useState<boolean>(false);
+
+  const roverSceneRef = useRef<RoverSceneHandle>(null);
+  const [isTopView, setIsTopView] = useState(true);
+  const handleCameraToggle = () => {
+      roverSceneRef.current?.toggleCamera();
+      setIsTopView(prev => !prev);
+  };
 
   // useEffect vai rodar 1 vez assim que a página abrir
   useEffect(() => {
@@ -115,10 +123,20 @@ function App() {
         {/* COLUNA DIREITA PREDOMINANTE: Simulação 3D */}
         <div className="scene-section">
           <div className="scene-header">
+          
             <h2>🗺️ Simulação Rover 3D</h2>
+          
+            <div className="camera-switch" onClick={handleCameraToggle}>
+                <span className={`switch-label ${isTopView ? 'active' : ''}`}>Top</span>
+                <div className="switch-track">
+                    <div className={`switch-thumb ${isTopView ? 'left' : 'right'}`} />
+                </div>
+                <span className={`switch-label ${!isTopView ? 'active' : ''}`}>Orbit</span>
+            </div>
+          
           </div>
           <div className="scene-wrapper">
-             <RoverScene commands={activeCommands} />
+             <RoverScene ref={roverSceneRef} commands={activeCommands} />
           </div>
         </div>
 
