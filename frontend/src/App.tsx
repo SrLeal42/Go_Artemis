@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import './index.css';
+
 import RoverScene from './components/RoverScene.tsx';
+import CodeEditor from './components/CodeEditor.tsx';
+
 import type { CompilerResult } from './engineAST/models/CompilerResultType.ts';
 import type { CommandNode } from './engineAST/models/CMDTypes.ts';
 
@@ -103,11 +106,9 @@ function App() {
               {isWasmLoaded ? "Processar Rota" : "Carregando..."}
             </button>
           </div>
-          <textarea 
-            className="code-editor" 
-            value={code} 
-            onChange={(e) => setCode(e.target.value)}
-            spellCheck={false}
+          <CodeEditor 
+              initialCode={code} 
+              onCodeChange={setCode} 
           />
         </div>
 
