@@ -109,32 +109,49 @@ export class Rover {
         return [this.gridX + dx, this.gridZ + dz];
     }
 
+    public async move(targetX: number, targetZ: number, direction: RoverRelativeDirection): Promise<void> {
 
-    public async moveForward(value: number): Promise<void> {
+        if (direction === RoverRelativeDirection.FRENTE){
 
-        for (let i = 0; i < value; i++) {
-            const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.FRENTE);
             this.setGridPosition(targetX, targetZ);
 
             await delay(1000);
-        }
 
-    }
-
-    
-    public async moveBackward(value : number): Promise<void> {
-
-        for (let i = 0; i < value; i++) {
-            const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.TRAS);
-            this.setGridPosition(targetX, targetZ);
-
-
+        } else {
             this.setGridPosition(targetX, targetZ);
 
             await delay(2000);
-        }
+        }    
 
     }
+
+
+
+    // public async moveForward(value: number): Promise<void> {
+
+    //     for (let i = 0; i < value; i++) {
+    //         const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.FRENTE);
+    //         this.setGridPosition(targetX, targetZ);
+
+    //         await delay(1000);
+    //     }
+
+    // }
+
+    
+    // public async moveBackward(value : number): Promise<void> {
+
+    //     for (let i = 0; i < value; i++) {
+    //         const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.TRAS);
+    //         this.setGridPosition(targetX, targetZ);
+
+
+    //         this.setGridPosition(targetX, targetZ);
+
+    //         await delay(2000);
+    //     }
+
+    // }
 
 
     public async turn(relativeDir: RoverRelativeDirection): Promise<void> {

@@ -1,10 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Scene3D } from '../scene3D/Scene3D';
+import { SimulationController } from '../scene3D/SimulationController';
 
-import { ASTEngine } from '../engineAST/scripts/ASTEngine';
-
-import type { FlatAction } from '../engineAST/models/FlatActionType';
-import { RoverRelativeDirection } from '../scene3D/scripts/rover/RoverDirection';
 
 export function RoverScene({ commands }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -12,61 +9,17 @@ export function RoverScene({ commands }) {
   // Aqui você armazena a sua Classe de forma Segura no React!
   const sceneInstance = useRef<Scene3D | null>(null);
 
-      useEffect(() => {
-        if (!commands || commands.length === 0 || !sceneInstance.current) return;
-        
-        let isCancelled = false; 
-        
-        // Uma função "assíncrona" permite o uso de "await" para travar o laço temporariamente
-        const runSimulation = async () => {
-          
-            const engineIterator = ASTEngine.executeAST(commands, (cond, dir) => {
-                // Pergunta pra física do Scene3D se a condição bate
-                return sceneInstance.current?.checkConditionOnMap(cond, dir) ?? false;
-            });
-            
-            let goalReached = false;
+  const controllerRef = useRef<SimulationController | null>(null);
 
-            // Fica repetindo infinitamente, a não ser que step.done acabe ou isCancelled ative
-            while (!isCancelled && !goalReached) {
-                const step = engineIterator.next();
-                
-                if (step.done) {
-                    console.log("🏁 Trajetório completa!");
-                    break;
-                }
-                
-                const acao = step.value as FlatAction;
-                
-                // O [await] AQUI é a cereja do bolo. O laço "while" vai CONGELAR
-                // até o resolve() lá no Scene3D ser disparado e a promise terminar!
-                switch(acao.action) {
-                  case "AVANCA":
-                    await sceneInstance.current?.rover.moveForward(acao.value);
-                    break;
-                  case "RECUA":
-                    await sceneInstance.current?.rover.moveBackward(acao.value);
-                    break;
-                  case "GIRA":
-                    const giraDir = RoverRelativeDirection[acao.direction as keyof typeof RoverRelativeDirection];
-                    await sceneInstance.current?.rover.turn(giraDir);
-                    break;
-                }
-        
-              if (sceneInstance.current?.checkGoalReached()) {
-                  console.log("🎯 Objetivo alcançado!");
-                  goalReached = true;
-              }
-
-            }
-        };
-        
-        runSimulation();
-
-        // Cleanup: Se o componente desmontar ou reiniciar, mata o relógio velho
-        return () => {
-          isCancelled = true;
-        };
+    useEffect(() => {
+      
+      if (!commands || commands.length === 0 || !controllerRef.current) return;
+    
+      controllerRef.current.run(commands);
+      
+      return () => {
+          controllerRef.current?.cancel();
+      };
     
     }, [commands]); // Esse Effect roda SEMPRE que o App pai jogar novos comandos na prop
 
@@ -76,6 +29,8 @@ export function RoverScene({ commands }) {
 
     // Inicia a cena e guarda o controle na referência
     sceneInstance.current = new Scene3D(canvasRef.current);
+
+    controllerRef.current = new SimulationController(sceneInstance.current);
 
     // O return do useEffect age como o "OnDestroy" do React
     return () => {
