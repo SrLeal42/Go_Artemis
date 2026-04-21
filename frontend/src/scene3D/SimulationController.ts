@@ -44,13 +44,15 @@ export class SimulationController {
     /**
      * Executa a simulação completa a partir de uma lista de comandos AST.
      */
-    public async run(commands: CommandNode[], onEnd?: (status: SimulationStatus) => void): Promise<void> {
+    public async run(commands: CommandNode[], onEnd?: (status: SimulationStatus, message?: string) => void): Promise<void> {
         // Sempre reseta antes de começar
         this.reset();
 
         // Libera a flag depois do reset
         this.isCancelled = false;
         this.status = SimulationStatus.RUNNING;
+
+        let errorMessage: string | undefined;
 
         const engineIterator = ASTEngine.executeAST(commands, (cond, dir) => {
             return this.scene3D.checkConditionOnMap(cond, dir);
@@ -76,13 +78,14 @@ export class SimulationController {
             }
         } catch (error) {
             this.status = SimulationStatus.ERROR;
-            console.error("💥 Simulação parou:", (error as Error).message);
+            errorMessage = (error as Error).message;
+            console.error("💥 Simulação parou:", errorMessage);
             // Aqui no futuro você pode emitir um callback/evento pro React mostrar o erro na UI
         }
 
         
         finally {
-            onEnd?.(this.status);
+            onEnd?.(this.status, errorMessage);
         }
 
     }

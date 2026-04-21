@@ -1,15 +1,17 @@
 import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Scene3D } from '../scene3D/Scene3D';
+
 import { SimulationController } from '../scene3D/SimulationController';
+import { SimulationStatus } from '../scene3D/models/SimulationStatusTypes';
 
 export interface RoverSceneHandle {
     toggleCamera: () => void;
-    stop: () => void;          // Cancela execução, rover fica onde está
-    reset: () => void;         // Cancela + reposiciona rover no spawn
-    regenerateTerrain: () => void; // Dispõe terreno atual, roda WFC de novo
+    stop: () => void;
+    reset: () => void;
+    regenerateTerrain: () => void;
 }
 
-export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimulationEnd?: () => void }>(
+export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimulationEnd?: (status: SimulationStatus, message?: string) => void }>(
     ({ commands, onSimulationEnd }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -41,8 +43,8 @@ export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimula
     
     if (!commands || commands.length === 0 || !controllerRef.current) return;
   
-    controllerRef.current.run(commands, () => {
-        onSimulationEnd?.();
+    controllerRef.current.run(commands, (status, message) => {
+        onSimulationEnd?.(status, message);
     });
     
     return () => {

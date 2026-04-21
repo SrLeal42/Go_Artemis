@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './index.css';
+import './styles/SimulationOverlay.css';
 
 import RoverScene from './components/RoverScene.tsx';
 import CodeEditor from './components/CodeEditor.tsx';
@@ -7,6 +8,8 @@ import CodeEditor from './components/CodeEditor.tsx';
 import type { CompilerResult } from './engineAST/models/CompilerResultType.ts';
 import type { CommandNode } from './engineAST/models/CMDTypes.ts';
 import type { RoverSceneHandle } from './components/RoverScene.tsx';
+
+import { SimulationStatus } from './scene3D/models/SimulationStatusTypes.ts';
 
 // ----------------------------------------------------
 // Dica Profissional: Expandimos os Tipos globais do TypeScript (Window)
@@ -30,6 +33,9 @@ function App() {
   const roverSceneRef = useRef<RoverSceneHandle>(null);
 
   const [isSimulating, setIsSimulating] = useState(false);
+  const [simulationResult, setSimulationResult] = useState<SimulationStatus | null>(null);
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [isTopView, setIsTopView] = useState(true);
   const handleCameraToggle = () => {
@@ -83,10 +89,16 @@ function App() {
 
   };
 
+  const resetSimulationVariables = () => {
+    setIsSimulating(false);
+    setSimulationResult(null);
+    setErrorMessage(null);
+  } 
+
     
- const handleRun = () => {
+  const handleRun = () => {
     
-  const compileResponse = handleCompile();
+    const compileResponse = handleCompile();
     
     if (!compileResponse || !compileResponse.success) {
        console.warn("Falha na compilação, o motor não vai iniciar.");
@@ -95,26 +107,43 @@ function App() {
 
     setIsSimulating(true);
     setActiveCommands(compileResponse.comands)
+    setSimulationResult(null);
   }
 
   const handleStop = () => {
     roverSceneRef.current?.stop();
-    setIsSimulating(false);
+    resetSimulationVariables();
   };
   
   const handleReset = () => {
     roverSceneRef.current?.reset();
-    setIsSimulating(false);
+    resetSimulationVariables();
   };
   
   const handleNewLevel = () => {
     roverSceneRef.current?.regenerateTerrain();
-    setIsSimulating(false);
+    resetSimulationVariables();
   };
 
-  const handleSimulationEnd = () => {
+  const handleSimulationEnd = (status: SimulationStatus, message?: string) => {
     setIsSimulating(false);
+    
+    if (status === SimulationStatus.SUCCESS || status === SimulationStatus.ERROR || status === SimulationStatus.END) {
+      setSimulationResult(status);
+      if (message) setErrorMessage(message);
+    }
+
   };
+
+
+  const getOverlayClass = (status: SimulationStatus) => {
+    if (status === SimulationStatus.SUCCESS) return 'overlay-success';
+    if (status === SimulationStatus.ERROR) return 'overlay-error';
+    if (status === SimulationStatus.END) return 'overlay-end';
+    return '';
+  };
+
+
 
 
 
@@ -131,7 +160,6 @@ function App() {
         <div className="sidebar">
           <div className="editor-header">
             <h2>💻 Fonte (Artemis Lang)</h2>
-            
             <div className="editor-actions">
               {isSimulating ? (
                   <button className="action-btn btn-stop" data-tooltip="Parar" onClick={handleStop}>
@@ -173,7 +201,86 @@ function App() {
           
           </div>
           <div className="scene-wrapper">
-             <RoverScene ref={roverSceneRef} commands={activeCommands} onSimulationEnd={handleSimulationEnd} />
+            <RoverScene ref={roverSceneRef} commands={activeCommands} onSimulationEnd={handleSimulationEnd} />
+                          
+            {simulationResult !== null && (
+              <div className={`simulation-overlay ${getOverlayClass(simulationResult)}`}>
+                  <div className="overlay-content">
+                      
+                      {simulationResult === SimulationStatus.SUCCESS && (
+                          <>
+                              <span className="overlay-icon">🎯</span>
+                              <h2>Objetivo Alcançado!</h2>
+                              <p>O rover chegou ao destino com sucesso.</p>
+                          </>
+                      )}
+                      {simulationResult === SimulationStatus.ERROR && (
+                          <>
+                              <span className="overlay-icon">💥</span>
+                              <h2>Simulação Falhou</h2>
+                              <p>{errorMessage || "O rover encontrou um problema durante a execução."}</p>
+                          </>
+                      )}
+                      {simulationResult === SimulationStatus.END && (
+                          <>
+                              <span className="overlay-icon">🏁</span>
+                              <h2>Trajetória Incompleta</h2>
+                              <p>Os comandos acabaram, mas o rover não chegou ao objetivo.</p>
+                          </>
+                      )}
+                      <div className="overlay-actions">
+                          <button className="overlay-btn btn-retry" onClick={() => {
+                              handleReset();
+                          }}>
+                              🔄 Reiniciar
+                          </button>
+                          <button className="overlay-btn btn-new" onClick={() => {
+                              handleNewLevel();
+                          }}>
+                              🎲 Novo Level
+                          </button>
+
+                      </div>
+                  </div>
+              </div>
+            )}
+
+
+              
+            {/* {simulationResult !== null && (
+                <div className="simulation-overlay">
+                    <div className="overlay-content">
+                        {simulationResult === SimulationStatus.SUCCESS ? (
+                            <>
+                                <span className="overlay-icon">🎯</span>
+                                <h2>Objetivo Alcançado!</h2>
+                                <p>O rover chegou ao destino com sucesso.</p>
+                            </>
+                        ) : (
+                            <>
+                                <span className="overlay-icon">💥</span>
+                                <h2>Simulação Falhou</h2>
+                                <p>O rover encontrou um problema durante a execução.</p>
+                            </>
+                        )}
+                        <div className="overlay-actions">
+                            <button className="overlay-btn btn-retry" onClick={() => {
+                                setSimulationResult(null);
+                                handleReset();
+                            }}>
+                                🔄 Reiniciar
+                            </button>
+                            <button className="overlay-btn btn-new" onClick={() => {
+                                setSimulationResult(null);
+                                handleNewLevel();
+                            }}>
+                                🎲 Novo Level
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )} */}
+          
           </div>
         </div>
 
