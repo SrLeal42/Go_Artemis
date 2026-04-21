@@ -61,7 +61,6 @@ body {
   background: var(--panel-bg);
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  overflow: hidden; /* Corta bordas do textarea */
   height: 100%;
   min-height: 0;
 }
@@ -115,7 +114,9 @@ body {
   font-size: 1.1rem;
   line-height: 1.5;
   color: #e2e8f0;
-  resize: none; 
+  resize: none;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;   
 }
 
 .code-editor:focus {
@@ -200,6 +201,115 @@ body {
     color: #60a5fa;
 }
 
+/* ── Editor Actions (grupo de botões) ── */
+.editor-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* ── Botão base com tooltip ── */
+.action-btn {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.action-btn:hover {
+    background: #1e293b;
+    border-color: #475569;
+    transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+
+/* ── Tooltip via pseudo-element ── */
+.action-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);   /* Aparece acima do botão */
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.action-btn:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+.action-btn:disabled::after {
+    display: none;  /* Sem tooltip quando desabilitado */
+}
+
+/* ── Variantes de cor por tipo ── */
+.btn-run {
+    border-color: #3b82f6;
+    color: #60a5fa;
+}
+
+.btn-run:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: #60a5fa;
+}
+
+.btn-stop {
+    border-color: #ef4444;
+    color: #f87171;
+}
+
+.btn-stop:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #f87171;
+}
+
+.btn-reset {
+    color: #fbbf24;
+}
+
+.btn-reset:hover {
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+}
+
+.btn-new-level {
+    color: #34d399;
+}
+
+.btn-new-level:hover {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.1);
+}
 
 
 

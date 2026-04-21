@@ -1,7 +1,7 @@
 import { Scene3D } from './Scene3D';
 import { ASTEngine } from '../engineAST/scripts/ASTEngine';
 
-import { RoverRelativeDirection, RoverWorldDirection } from './scripts/rover/RoverDirection';
+import { RoverRelativeDirection } from './scripts/rover/RoverDirection';
 import { TerrainTypes } from './scripts/terrain/TerrainTypes';
 import { SimulationStatus } from './models/SimulationStatusTypes';
 
@@ -26,22 +26,25 @@ export class SimulationController {
      * Cancela qualquer simulação em andamento e reposiciona o rover no spawn.
      */
     public reset(): void {
+        this.stop();
+
+        this.scene3D.resetRover();
+    }
+
+    public stop(): void {
         this.isCancelled = true;
         this.status = SimulationStatus.IDLE;
+    }
 
-        const spawn = this.scene3D.terrain.spawnPosition;
-        this.scene3D.rover.setGridPosition(spawn.x, spawn.z);
-        // Resetar a direção também
-        this.scene3D.rover.facingDirection = RoverWorldDirection.NORTH;
-        if (this.scene3D.rover.pivot) {
-            this.scene3D.rover.pivot.rotation.y = 0;
-        }
+    public regenerateTerrain(): void {
+        this.stop();
+        this.scene3D.regenerateTerrain();
     }
 
     /**
      * Executa a simulação completa a partir de uma lista de comandos AST.
      */
-    public async run(commands: CommandNode[]): Promise<void> {
+    public async run(commands: CommandNode[], onEnd?: (status: SimulationStatus) => void): Promise<void> {
         // Sempre reseta antes de começar
         this.reset();
 
@@ -76,6 +79,12 @@ export class SimulationController {
             console.error("💥 Simulação parou:", (error as Error).message);
             // Aqui no futuro você pode emitir um callback/evento pro React mostrar o erro na UI
         }
+
+        
+        finally {
+            onEnd?.(this.status);
+        }
+
     }
 
     /**

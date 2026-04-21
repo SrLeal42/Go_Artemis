@@ -9,7 +9,7 @@ import { MaterialInstance } from './scripts/managers/MaterialManager';
 import { ModelInstance } from './scripts/managers/ModelManager';
 
 import { TerrainTypes } from './scripts/terrain/TerrainTypes';
-import { RoverRelativeDirection } from './scripts/rover/RoverDirection';
+import { RoverRelativeDirection, RoverWorldDirection } from './scripts/rover/RoverDirection';
 
 export class Scene3D {
 
@@ -104,6 +104,30 @@ export class Scene3D {
     }
 
     return false;
+  }
+
+
+  public resetRover(): void {
+    const spawn = this.terrain.spawnPosition;
+    this.rover.setGridPosition(spawn.x, spawn.z);
+    this.rover.facingDirection = RoverWorldDirection.NORTH;
+    
+    if (this.rover.pivot) {
+        this.rover.pivot.rotation.y = 0;
+    }
+
+  }
+
+
+  public regenerateTerrain(): void {
+    this.terrain.generate();
+    
+    this.goal.dispose();
+    const goalPos = this.terrain.goalPosition;
+    this.goal = new Goal(this.scene, goalPos.x, goalPos.z);
+    
+    this.resetRover();
+
   }
 
 

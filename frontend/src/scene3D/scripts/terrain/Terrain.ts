@@ -30,7 +30,8 @@ export class Terrain {
 
         this.wfcSolver = new WFCSolver(wfcRules, this.gridSize);
 
-        this.initializeGrid();
+        // this.initializeGrid();
+        this.generate();
 
         this.isInicialized = true; 
     }
@@ -60,36 +61,6 @@ export class Terrain {
     // }
 
 
-
-    private initializeGrid(): void {
-        const result = this.wfcSolver.solve();
-
-        if (!result) {
-            console.error("ERRO: Falha ao gerar terreno via WFC!");
-            return;
-        }
-
-        for (let x = -this.gridSize; x <= this.gridSize; x++) {
-            for (let z = -this.gridSize; z <= this.gridSize; z++) {
-
-                const tileId = result.get(`${x},${z}`)!;
-
-                const tileType = TILE_ID_TO_TYPE[tileId] ?? TerrainTypes.TRANSPONIVEL;
-
-                if (tileType === TerrainTypes.SURGIMENTO) {
-                    this.spawnPosition = { x, z };
-                } else if (tileType === TerrainTypes.OBJETIVO) {
-                    this.goalPosition = { x, z };
-                }
-
-                this.createCell(x, 0, z, tileType);
-
-            }
-        }
-
-    }
-
-
     private createCell(x: number, y: number, z: number, tileType: number): void {
 
         const cellKey = `${x},${y},${z}`;
@@ -99,6 +70,48 @@ export class Terrain {
         this.terrainGrid.set(cellKey, newCell);
 
     }
+
+
+
+    public generate(): void {
+        
+        this.wfcSolver = new WFCSolver(wfcRules, this.gridSize);
+        const result = this.wfcSolver.solve();
+        
+        if (!result) {
+            console.error("ERRO: Falha ao regenerar terreno via WFC!");
+            return;
+        }
+
+        for (let x = -this.gridSize; x <= this.gridSize; x++) {
+            for (let z = -this.gridSize; z <= this.gridSize; z++) {
+        
+                const tileId = result.get(`${x},${z}`)!;
+                const tileType = TILE_ID_TO_TYPE[tileId] ?? TerrainTypes.TRANSPONIVEL;
+        
+                if (tileType === TerrainTypes.SURGIMENTO) {
+                    this.spawnPosition = { x, z };
+                } else if (tileType === TerrainTypes.OBJETIVO) {
+                    this.goalPosition = { x, z };
+                }
+
+                const cellKey = `${x},0,${z}`;
+                
+                const cell = this.terrainGrid.get(cellKey);
+                
+                if (cell) {
+                    cell.chosenTile = tileType;
+                    cell.changeMesh(); // Já faz dispose da mesh antiga + cria a nova
+                } else {
+                    this.createCell(x, 0, z, tileType);
+                }
+
+            }
+        }
+
+
+    }
+
 
 
 

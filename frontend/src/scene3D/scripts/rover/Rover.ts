@@ -126,34 +126,6 @@ export class Rover {
     }
 
 
-
-    // public async moveForward(value: number): Promise<void> {
-
-    //     for (let i = 0; i < value; i++) {
-    //         const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.FRENTE);
-    //         this.setGridPosition(targetX, targetZ);
-
-    //         await delay(1000);
-    //     }
-
-    // }
-
-    
-    // public async moveBackward(value : number): Promise<void> {
-
-    //     for (let i = 0; i < value; i++) {
-    //         const [targetX, targetZ] = this.getAdjacentGridPosition(RoverRelativeDirection.TRAS);
-    //         this.setGridPosition(targetX, targetZ);
-
-
-    //         this.setGridPosition(targetX, targetZ);
-
-    //         await delay(2000);
-    //     }
-
-    // }
-
-
     public async turn(relativeDir: RoverRelativeDirection): Promise<void> {
         const arrayRoverDirection = Object.values(RoverWorldDirection);
         

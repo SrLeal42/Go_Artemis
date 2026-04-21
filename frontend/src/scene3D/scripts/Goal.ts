@@ -27,4 +27,11 @@ export class Goal {
     public isAtPosition(x: number, z: number): boolean {
         return this.gridX === x && this.gridZ === z;
     }
+
+    public dispose(): void {
+        if (this.mesh) {
+            this.mesh.dispose();
+        }
+    }
+    
 }

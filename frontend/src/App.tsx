@@ -28,6 +28,9 @@ function App() {
   const [isWasmLoaded, setIsWasmLoaded] = useState<boolean>(false);
 
   const roverSceneRef = useRef<RoverSceneHandle>(null);
+
+  const [isSimulating, setIsSimulating] = useState(false);
+
   const [isTopView, setIsTopView] = useState(true);
   const handleCameraToggle = () => {
       roverSceneRef.current?.toggleCamera();
@@ -89,11 +92,29 @@ function App() {
        console.warn("Falha na compilação, o motor não vai iniciar.");
        return; 
     }
-    
+
+    setIsSimulating(true);
     setActiveCommands(compileResponse.comands)
-    // console.log(compileResponse.comands)
-  
   }
+
+  const handleStop = () => {
+    roverSceneRef.current?.stop();
+    setIsSimulating(false);
+  };
+  
+  const handleReset = () => {
+    roverSceneRef.current?.reset();
+    setIsSimulating(false);
+  };
+  
+  const handleNewLevel = () => {
+    roverSceneRef.current?.regenerateTerrain();
+    setIsSimulating(false);
+  };
+
+  const handleSimulationEnd = () => {
+    setIsSimulating(false);
+  };
 
 
 
@@ -110,9 +131,25 @@ function App() {
         <div className="sidebar">
           <div className="editor-header">
             <h2>💻 Fonte (Artemis Lang)</h2>
-            <button className="compile-btn" onClick={handleRun} disabled={!isWasmLoaded}>
-              {isWasmLoaded ? "Processar Rota" : "Carregando..."}
-            </button>
+            
+            <div className="editor-actions">
+              {isSimulating ? (
+                  <button className="action-btn btn-stop" data-tooltip="Parar" onClick={handleStop}>
+                      ⏹
+                  </button>
+              ) : (
+                  <button className="action-btn btn-run" data-tooltip="Rodar" onClick={handleRun} disabled={!isWasmLoaded}>
+                      ▶
+                  </button>
+              )}
+              <button className="action-btn btn-reset" data-tooltip="Reiniciar" onClick={handleReset} disabled={isSimulating}>
+                  🔄
+              </button>
+              <button className="action-btn btn-new-level" data-tooltip="Regerar Terreno" onClick={handleNewLevel} disabled={isSimulating}>
+                  🎲
+              </button>
+            </div>
+
           </div>
           <CodeEditor 
               initialCode={code} 
@@ -136,7 +173,7 @@ function App() {
           
           </div>
           <div className="scene-wrapper">
-             <RoverScene ref={roverSceneRef} commands={activeCommands} />
+             <RoverScene ref={roverSceneRef} commands={activeCommands} onSimulationEnd={handleSimulationEnd} />
           </div>
         </div>
 

@@ -72,6 +72,7 @@ export class TerrainCell {
         }
 
         if(this.mesh){
+            this.mesh.dispose();
             this.mesh = null;
         }
 

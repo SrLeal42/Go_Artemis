@@ -4,10 +4,13 @@ import { SimulationController } from '../scene3D/SimulationController';
 
 export interface RoverSceneHandle {
     toggleCamera: () => void;
+    stop: () => void;          // Cancela execução, rover fica onde está
+    reset: () => void;         // Cancela + reposiciona rover no spawn
+    regenerateTerrain: () => void; // Dispõe terreno atual, roda WFC de novo
 }
 
-export const RoverScene = forwardRef<RoverSceneHandle, { commands: any }>(
-    ({ commands }, ref) => {
+export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimulationEnd?: () => void }>(
+    ({ commands, onSimulationEnd }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   // Aqui você armazena a sua Classe de forma Segura no React!
@@ -17,9 +20,20 @@ export const RoverScene = forwardRef<RoverSceneHandle, { commands: any }>(
 
 
   useImperativeHandle(ref, () => ({
+    
     toggleCamera: () => {
         sceneInstance.current?.camera.toggleCamera();
     },
+    stop: () => {
+      controllerRef.current?.stop();
+    },
+    reset: () => {
+      controllerRef.current?.reset();
+    },
+    regenerateTerrain: () => {
+      controllerRef.current?.regenerateTerrain();
+    }
+
   }));
 
 
@@ -27,7 +41,9 @@ export const RoverScene = forwardRef<RoverSceneHandle, { commands: any }>(
     
     if (!commands || commands.length === 0 || !controllerRef.current) return;
   
-    controllerRef.current.run(commands);
+    controllerRef.current.run(commands, () => {
+        onSimulationEnd?.();
+    });
     
     return () => {
         controllerRef.current?.cancel();
