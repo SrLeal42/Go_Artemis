@@ -114,6 +114,14 @@ func (p *Parser) parseBlock() []models.CommandNode {
 		p.nextToken() // Vai pro próximo comando dentro do bloco
 	}
 
+	// Verifica se o bloco foi realmente fechado
+	if p.curToken.Type == token.EOF {
+		p.errors = append(p.errors, models.CompilerError{
+			Line:    p.curToken.Line,
+			Message: "Esperava '}' para fechar o bloco, mas o código terminou antes",
+		})
+	}
+
 	return block
 }
 
