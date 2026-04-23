@@ -6,22 +6,34 @@
       "traversal": "passable",
       "modelKey": "terrain_transponivel",
       "adjacency": {
-        "north": ["TRANSPONIVEL", "OBSTACULO", "OBJETIVO", "SURGIMENTO"],
-        "south": ["TRANSPONIVEL", "OBSTACULO", "OBJETIVO", "SURGIMENTO"],
-        "east":  ["TRANSPONIVEL", "OBSTACULO", "OBJETIVO", "SURGIMENTO"],
-        "west":  ["TRANSPONIVEL", "OBSTACULO", "OBJETIVO", "SURGIMENTO"]
+        "north": ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA"],
+        "south": ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA"],
+        "east":  ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA"],
+        "west":  ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA"]
       }
     },
     {
-      "id": "OBSTACULO",
+      "id": "ROCHA",
       "weight": 3,
       "traversal": "blocked",
-      "modelKey": "terrain_obstaculo",
+      "modelKey": "terrain_rocha",
       "adjacency": {
-        "north": ["OBSTACULO", "TRANSPONIVEL"],
-        "south": ["OBSTACULO", "TRANSPONIVEL"],
-        "east":  ["OBSTACULO", "TRANSPONIVEL"],
-        "west":  ["OBSTACULO", "TRANSPONIVEL"]
+        "north": ["ROCHA", "TRANSPONIVEL", "CRATERA"],
+        "south": ["ROCHA", "TRANSPONIVEL", "CRATERA"],
+        "east":  ["ROCHA", "TRANSPONIVEL", "CRATERA"],
+        "west":  ["ROCHA", "TRANSPONIVEL", "CRATERA"]
+      }
+    },
+    {
+      "id": "CRATERA",
+      "weight": 1,
+      "traversal": "blocked",
+      "modelKey": "terrain_cratera",
+      "adjacency": {
+        "north": ["ROCHA", "TRANSPONIVEL"],
+        "south": ["ROCHA", "TRANSPONIVEL"],
+        "east":  ["ROCHA", "TRANSPONIVEL"],
+        "west":  ["ROCHA", "TRANSPONIVEL"]
       }
     },
     {

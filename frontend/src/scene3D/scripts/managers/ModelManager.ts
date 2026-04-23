@@ -16,42 +16,18 @@ class ModelManager {
 
     // Registra todos os modelos mestres aqui
     private initializeModels(): void {
-
-        // Um mestre POR tipo de terreno, cada um com seu material
-        const masterDefault = B.MeshBuilder.CreatePlane("master_default", {}, this.scene)
-        masterDefault.material = MaterialInstance.getMaterial("terrain_transponivel");
-        masterDefault.rotation = new B.Vector3(Math.PI/2, 0, 0);
-        masterDefault.setEnabled(false);
-        this.masterMeshes.set("terrain_default", masterDefault);
-
-        const masterTransponivel = B.MeshBuilder.CreatePlane("master_transponivel", {}, this.scene)
-        masterTransponivel.material = MaterialInstance.getMaterial("terrain_transponivel");
-        masterTransponivel.rotation = new B.Vector3(Math.PI/2, 0, 0);
-        masterTransponivel.setEnabled(false);
-        this.masterMeshes.set("terrain_transponivel", masterTransponivel);
-
-        const masterObstaculo = B.MeshBuilder.CreatePlane("master_obstaculo", {}, this.scene)
-        masterObstaculo.material = MaterialInstance.getMaterial("terrain_obstaculo");
-        masterObstaculo.rotation = new B.Vector3(Math.PI/2, 0, 0);
-        masterObstaculo.setEnabled(false);
-        this.masterMeshes.set("terrain_obstaculo", masterObstaculo);
-
-        const masterObjetivo = B.MeshBuilder.CreatePlane("master_objetivo", {}, this.scene)
-        masterObjetivo.material = MaterialInstance.getMaterial("terrain_objetivo");
-        masterObjetivo.rotation = new B.Vector3(Math.PI/2, 0, 0);
-        masterObjetivo.setEnabled(false);
-        this.masterMeshes.set("terrain_objetivo", masterObjetivo);
+        
+        this.registerTerrainPlane("terrain_default",       "terrain_transponivel");
+        this.registerTerrainPlane("terrain_transponivel",  "terrain_transponivel");
+        this.registerTerrainPlane("terrain_rocha",         "terrain_rocha");
+        this.registerTerrainPlane("terrain_cratera",       "terrain_cratera");
+        this.registerTerrainPlane("terrain_objetivo",      "terrain_objetivo");
+        this.registerTerrainPlane("terrain_surgimento",    "terrain_surgimento");
 
         const masterObjetivoCube = B.MeshBuilder.CreateBox("master_objetivo_cubo", {}, this.scene);
         masterObjetivoCube.material = MaterialInstance.getMaterial("objetivo_cubo");
         masterObjetivoCube.setEnabled(false);
         this.masterMeshes.set("objetivo_cubo", masterObjetivoCube);
-
-        const masterSurgimento = B.MeshBuilder.CreatePlane("master_surgimento", {}, this.scene)
-        masterSurgimento.material = MaterialInstance.getMaterial("terrain_surgimento");
-        masterSurgimento.rotation = new B.Vector3(Math.PI/2, 0, 0);
-        masterSurgimento.setEnabled(false);
-        this.masterMeshes.set("terrain_surgimento", masterSurgimento);
 
         const masterRoverBody = B.MeshBuilder.CreateBox("master_rover_body", {}, this.scene);
         masterRoverBody.material = MaterialInstance.getMaterial("rover_body");
@@ -74,6 +50,15 @@ class ModelManager {
         }
 
         return master.createInstance(instanceName);
+    }
+
+
+    private registerTerrainPlane(key: string, materialKey: string): void {
+        const mesh = B.MeshBuilder.CreatePlane(`master_${key}`, {}, this.scene);
+        mesh.material = MaterialInstance.getMaterial(materialKey);
+        mesh.rotation = new B.Vector3(Math.PI / 2, 0, 0);
+        mesh.setEnabled(false);
+        this.masterMeshes.set(key, mesh);
     }
 
 
