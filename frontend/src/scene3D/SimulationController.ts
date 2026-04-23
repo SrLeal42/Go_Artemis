@@ -2,7 +2,7 @@ import { Scene3D } from './Scene3D';
 import { ASTEngine } from '../engineAST/scripts/ASTEngine';
 
 import { RoverRelativeDirection } from './scripts/rover/RoverDirection';
-import { TerrainTypes } from './scripts/terrain/TerrainTypes';
+import { TileTraversal } from './scripts/terrain/TerrainTypes';
 import { SimulationStatus } from './models/SimulationStatusTypes';
 
 import type { CommandNode } from '../engineAST/models/CMDTypes';
@@ -145,7 +145,7 @@ export class SimulationController {
             throw new Error(`Célula (${x}, ${z}) não existe no terreno.`);
         }
 
-        if (cell.chosenTile === TerrainTypes.OBSTACULO) {
+        if (cell.traversal === TileTraversal.BLOCKED) {
             throw new Error(`Rover colidiu com obstáculo na posição (${x}, ${z})!`);
         }
     }

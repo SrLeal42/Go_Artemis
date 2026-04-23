@@ -8,7 +8,7 @@ import { Goal } from './scripts/Goal';
 import { MaterialInstance } from './scripts/managers/MaterialManager';
 import { ModelInstance } from './scripts/managers/ModelManager';
 
-import { TerrainTypes } from './scripts/terrain/TerrainTypes';
+import { TerrainTypes, TileTraversal } from './scripts/terrain/TerrainTypes';
 import { RoverRelativeDirection, RoverWorldDirection } from './scripts/rover/RoverDirection';
 
 export class Scene3D {
@@ -98,7 +98,7 @@ export class Scene3D {
     // Verifica a condição
     switch(cond){
       case "OBSTACULO":
-        return cell.chosenTile === TerrainTypes.OBSTACULO;
+        return cell.traversal === TileTraversal.BLOCKED;
       case "OBJETIVO":
         return cell.chosenTile === TerrainTypes.OBJETIVO;
     }

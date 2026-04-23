@@ -13,3 +13,17 @@ export const TILE_ID_TO_TYPE: Record<string, number> = {
     "OBJETIVO":     TerrainTypes.OBJETIVO,
     "SURGIMENTO":   TerrainTypes.SURGIMENTO,
 };
+
+
+
+export const TileTraversal = {
+    PASSABLE: 0,
+    BLOCKED: 1
+} as const
+export type TileTraversal = typeof TileTraversal[keyof typeof TileTraversal];
+
+
+export const TILE_TRAVERSAL_TO_TYPE: Record<string, number> = {
+    "passable": TileTraversal.PASSABLE,
+    "blocked":    TileTraversal.BLOCKED,
+};

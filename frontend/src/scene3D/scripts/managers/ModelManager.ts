@@ -18,6 +18,12 @@ class ModelManager {
     private initializeModels(): void {
 
         // Um mestre POR tipo de terreno, cada um com seu material
+        const masterDefault = B.MeshBuilder.CreatePlane("master_default", {}, this.scene)
+        masterDefault.material = MaterialInstance.getMaterial("terrain_transponivel");
+        masterDefault.rotation = new B.Vector3(Math.PI/2, 0, 0);
+        masterDefault.setEnabled(false);
+        this.masterMeshes.set("terrain_default", masterDefault);
+
         const masterTransponivel = B.MeshBuilder.CreatePlane("master_transponivel", {}, this.scene)
         masterTransponivel.material = MaterialInstance.getMaterial("terrain_transponivel");
         masterTransponivel.rotation = new B.Vector3(Math.PI/2, 0, 0);

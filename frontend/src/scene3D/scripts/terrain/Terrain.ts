@@ -1,6 +1,6 @@
 import * as B from '@babylonjs/core';
 
-import { TerrainTypes, TILE_ID_TO_TYPE } from './TerrainTypes';
+import { TerrainTypes, TILE_ID_TO_TYPE, TileTraversal, TILE_TRAVERSAL_TO_TYPE } from './TerrainTypes';
 
 import { TerrainCell } from './TerrainCell';
 
@@ -61,11 +61,11 @@ export class Terrain {
     // }
 
 
-    private createCell(x: number, y: number, z: number, tileType: number): void {
+    private createCell(x: number, y: number, z: number, tileType: number, traversal: number, modelKey: string): void {
 
         const cellKey = `${x},${y},${z}`;
 
-        const newCell = new TerrainCell(this.scene, x, y, z, tileType);
+        const newCell = new TerrainCell(this.scene, x, y, z, tileType, traversal, modelKey);
 
         this.terrainGrid.set(cellKey, newCell);
 
@@ -86,8 +86,9 @@ export class Terrain {
         for (let x = -this.gridSize; x <= this.gridSize; x++) {
             for (let z = -this.gridSize; z <= this.gridSize; z++) {
         
-                const tileId = result.get(`${x},${z}`)!;
-                const tileType = TILE_ID_TO_TYPE[tileId] ?? TerrainTypes.TRANSPONIVEL;
+                const entry = result.get(`${x},${z}`)!;
+                const tileType = TILE_ID_TO_TYPE[entry.tileId] ?? TerrainTypes.TRANSPONIVEL;
+                const traversal = TILE_TRAVERSAL_TO_TYPE[entry.traversal] ?? TileTraversal.PASSABLE;
         
                 if (tileType === TerrainTypes.SURGIMENTO) {
                     this.spawnPosition = { x, z };
@@ -101,9 +102,11 @@ export class Terrain {
                 
                 if (cell) {
                     cell.chosenTile = tileType;
+                    cell.traversal = traversal;
+                    cell.modelKey = entry.modelKey;
                     cell.changeMesh(); // Já faz dispose da mesh antiga + cria a nova
                 } else {
-                    this.createCell(x, 0, z, tileType);
+                    this.createCell(x, 0, z, tileType, traversal, entry.modelKey);
                 }
 
             }

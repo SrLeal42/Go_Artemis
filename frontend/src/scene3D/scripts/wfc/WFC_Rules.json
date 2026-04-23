@@ -3,6 +3,8 @@
     {
       "id": "TRANSPONIVEL",
       "weight": 10,
+      "traversal": "passable",
+      "modelKey": "terrain_transponivel",
       "adjacency": {
         "north": ["TRANSPONIVEL", "OBSTACULO", "OBJETIVO", "SURGIMENTO"],
         "south": ["TRANSPONIVEL", "OBSTACULO", "OBJETIVO", "SURGIMENTO"],
@@ -13,6 +15,8 @@
     {
       "id": "OBSTACULO",
       "weight": 3,
+      "traversal": "blocked",
+      "modelKey": "terrain_obstaculo",
       "adjacency": {
         "north": ["OBSTACULO", "TRANSPONIVEL"],
         "south": ["OBSTACULO", "TRANSPONIVEL"],
@@ -23,6 +27,8 @@
     {
       "id": "OBJETIVO",
       "weight": 0,
+      "traversal": "passable",
+      "modelKey": "terrain_objetivo",
       "placement": {
         "count": 1,
         "minDistFromEdge": 1,
@@ -38,6 +44,8 @@
     {
       "id": "SURGIMENTO",
       "weight": 0,
+      "traversal": "passable",
+      "modelKey": "terrain_surgimento",
       "placement": {
         "count": 1,
         "minDistFromEdge": 1,

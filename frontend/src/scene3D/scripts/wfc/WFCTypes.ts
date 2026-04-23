@@ -9,6 +9,8 @@ export interface TilePlacement {
 export interface TileRule {
     id: string;
     weight: number;
+    traversal: string;
+    modelKey: string;
     placement?: TilePlacement;
     adjacency: Record<Direction, string[]>;
 }
@@ -25,6 +27,8 @@ export interface WFCCell {
     possibleTiles: Set<string>;
     collapsed: boolean;
     chosenTile: string | null;
+    traversal: string | null;
+    modelKey: string | null;
 }
 
 // === Direções ===

@@ -10,6 +10,10 @@ export class WFCSolver {
 
     // Lookup pré-computado: para cada tile, para cada direção, quais tiles são permitidos
     private adjacencyMap: Map<string, Record<Direction, Set<string>>> = new Map();
+    // Vai guardar todos os tranversal por ID de Tile;
+    private traversalMap: Map<string, string> = new Map();
+    // Vai guardar todos os modelKey por ID de Tile;
+    private modelKeyMap: Map<string, string> = new Map(); 
 
     constructor(rules: WFCRulesData, gridSize: number) {
         this.rules = rules;
@@ -30,6 +34,8 @@ export class WFCSolver {
                 dirMap[dir] = new Set(tile.adjacency[dir]);
             }
             this.adjacencyMap.set(tile.id, dirMap);
+            this.traversalMap.set(tile.id, tile.traversal);
+            this.modelKeyMap.set(tile.id, tile.modelKey);
         }
     }
 
@@ -50,6 +56,8 @@ export class WFCSolver {
                     possibleTiles: new Set(normalTileIds),
                     collapsed: false,
                     chosenTile: null,
+                    traversal: null,
+                    modelKey: null,
                 });
             }
         }
@@ -84,6 +92,8 @@ export class WFCSolver {
                 cell.possibleTiles = new Set([tile.id]);
                 cell.collapsed = true;
                 cell.chosenTile = tile.id;
+                cell.traversal = tile.traversal;
+                cell.modelKey = tile.modelKey;
 
                 placedPositions.push(pos);
 
@@ -184,6 +194,8 @@ export class WFCSolver {
         cell.chosenTile = options[chosenIndex];
         cell.possibleTiles = new Set([cell.chosenTile]);
         cell.collapsed = true;
+        cell.traversal = this.traversalMap.get(cell.chosenTile);
+        cell.modelKey = this.modelKeyMap.get(cell.chosenTile);
     }
 
 
@@ -245,7 +257,7 @@ export class WFCSolver {
     //  SOLVE — orquestra tudo
     // =============================================
 
-    public solve(maxRetries = 10): Map<string, string> | null {
+    public solve(maxRetries = 10): Map<string, { tileId: string; traversal: string; modelKey: string }> | null {
 
         for (let attempt = 0; attempt < maxRetries; attempt++) {
 
@@ -273,11 +285,13 @@ export class WFCSolver {
             }
 
             if (success) {
+                
                 // Monta o resultado final: "x,z" → tileId
-                const result = new Map<string, string>();
+                const result = new Map<string, { tileId: string; traversal: string; modelKey: string }>();
                 for (const [key, cell] of this.grid) {
-                    result.set(key, cell.chosenTile!);
+                    result.set(key, { tileId: cell.chosenTile, traversal: cell.traversal, modelKey: cell.modelKey });
                 }
+
                 return result;
             }
 
