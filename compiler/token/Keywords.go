@@ -7,6 +7,7 @@ var keywords = map[string]TokenType{
 	"DETECTA":   DETECTA,
 	"OBSTACULO": OBSTACULO,
 	"OBJETIVO":  OBJETIVO,
+	"BORDA":     BORDA,
 	"ESQUERDA":  ESQUERDA,
 	"DIREITA":   DIREITA,
 	"FRENTE":    FRENTE,

@@ -156,8 +156,10 @@ func (p *Parser) parseIfCommand() models.CommandNode {
 	p.nextToken()
 
 	// Garante que é uma condição válida usando '&&'
-	if p.curToken.Type != token.OBSTACULO && p.curToken.Type != token.OBJETIVO {
-		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: IF precisa ser seguido de OBSTACULO ou OBJETIVO"})
+	if p.curToken.Type != token.OBSTACULO &&
+		p.curToken.Type != token.OBJETIVO &&
+		p.curToken.Type != token.BORDA {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: IF precisa ser seguido de OBSTACULO, OBJETIVO ou BORDA"})
 		return nil
 	}
 	cmd.Condition = p.curToken.Literal // Guarda no modelo (Ex: "OBSTACULO")

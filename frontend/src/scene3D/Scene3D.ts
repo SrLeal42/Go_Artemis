@@ -93,7 +93,7 @@ export class Scene3D {
     const cellKey = `${checkX},0,${checkZ}`;
     const cell = this.terrain.terrainGrid.get(cellKey);
     
-    if (!cell) return false; // Fora do mapa
+    if (!cell) return cond === "BORDA"; // Fora do mapa / Verificação da condição BORDA
     
     // Verifica a condição
     switch(cond){
@@ -101,6 +101,7 @@ export class Scene3D {
         return cell.traversal === TileTraversal.BLOCKED;
       case "OBJETIVO":
         return cell.chosenTile === TerrainTypes.OBJETIVO;
+
     }
 
     return false;

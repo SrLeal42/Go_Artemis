@@ -23,6 +23,7 @@ const (
 	DETECTA   = "DETECTA"
 	OBSTACULO = "OBSTACULO"
 	OBJETIVO  = "OBJETIVO"
+	BORDA     = "BORDA"
 
 	// Opcionais/Direções
 	ESQUERDA = "ESQUERDA"
