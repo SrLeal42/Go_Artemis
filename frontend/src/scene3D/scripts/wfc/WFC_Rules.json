@@ -6,10 +6,10 @@
       "traversal": "passable",
       "modelKey": "terrain_transponivel",
       "adjacency": {
-        "north": ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA"],
-        "south": ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA"],
-        "east":  ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA"],
-        "west":  ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA"]
+        "north": ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA", "MONTANHA_SUL", "MONTANHA_SUDESTE", "MONTANHA_SUDOESTE"],
+        "south": ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA", "MONTANHA_NORTE", "MONTANHA_NOROESTE", "MONTANHA_NORDESTE"],
+        "east":  ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA", "MONTANHA_OESTE", "MONTANHA_NOROESTE", "MONTANHA_SUDOESTE"],
+        "west":  ["TRANSPONIVEL", "ROCHA", "OBJETIVO", "SURGIMENTO", "CRATERA", "MONTANHA_LESTE", "MONTANHA_NORDESTE", "MONTANHA_SUDESTE"]
       }
     },
     {
@@ -18,10 +18,10 @@
       "traversal": "blocked",
       "modelKey": "terrain_rocha",
       "adjacency": {
-        "north": ["ROCHA", "TRANSPONIVEL", "CRATERA"],
-        "south": ["ROCHA", "TRANSPONIVEL", "CRATERA"],
-        "east":  ["ROCHA", "TRANSPONIVEL", "CRATERA"],
-        "west":  ["ROCHA", "TRANSPONIVEL", "CRATERA"]
+        "north": ["ROCHA", "TRANSPONIVEL", "CRATERA", "MONTANHA_SUL", "MONTANHA_SUDESTE", "MONTANHA_SUDOESTE"],
+        "south": ["ROCHA", "TRANSPONIVEL", "CRATERA", "MONTANHA_NORTE", "MONTANHA_NOROESTE", "MONTANHA_NORDESTE"],
+        "east":  ["ROCHA", "TRANSPONIVEL", "CRATERA", "MONTANHA_OESTE", "MONTANHA_NOROESTE", "MONTANHA_SUDOESTE"],
+        "west":  ["ROCHA", "TRANSPONIVEL", "CRATERA", "MONTANHA_LESTE", "MONTANHA_NORDESTE", "MONTANHA_SUDESTE"]
       }
     },
     {
@@ -30,10 +30,10 @@
       "traversal": "blocked",
       "modelKey": "terrain_cratera",
       "adjacency": {
-        "north": ["ROCHA", "TRANSPONIVEL"],
-        "south": ["ROCHA", "TRANSPONIVEL"],
-        "east":  ["ROCHA", "TRANSPONIVEL"],
-        "west":  ["ROCHA", "TRANSPONIVEL"]
+        "north": ["ROCHA", "TRANSPONIVEL", "MONTANHA_SUL", "MONTANHA_SUDESTE", "MONTANHA_SUDOESTE"],
+        "south": ["ROCHA", "TRANSPONIVEL", "MONTANHA_NORTE", "MONTANHA_NOROESTE", "MONTANHA_NORDESTE"],
+        "east":  ["ROCHA", "TRANSPONIVEL", "MONTANHA_OESTE", "MONTANHA_NOROESTE", "MONTANHA_SUDOESTE"],
+        "west":  ["ROCHA", "TRANSPONIVEL", "MONTANHA_LESTE", "MONTANHA_NORDESTE", "MONTANHA_SUDESTE"]
       }
     },
     {
@@ -69,6 +69,119 @@
         "east":  ["TRANSPONIVEL"],
         "west":  ["TRANSPONIVEL"]
       }
+    },
+
+
+
+    {
+      "id": "MONTANHA_NORTE",
+      "weight": 0.5,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_norte",
+      "adjacency": {
+        "north": ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "south": ["MONTANHA_CENTRO"],
+        "east":  ["MONTANHA_NORTE", "MONTANHA_NORDESTE"],
+        "west":  ["MONTANHA_NORTE", "MONTANHA_NOROESTE"]
+      }
+    },
+    {
+      "id": "MONTANHA_OESTE",
+      "weight": 0.5,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_oeste",
+      "adjacency": {
+        "north": ["MONTANHA_OESTE", "MONTANHA_NOROESTE"],
+        "south": ["MONTANHA_OESTE", "MONTANHA_SUDOESTE"],
+        "east":  ["MONTANHA_CENTRO"],
+        "west":  ["ROCHA", "CRATERA", "TRANSPONIVEL"]
+      }
+    },
+    {
+      "id": "MONTANHA_LESTE",
+      "weight": 0.5,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_leste",
+      "adjacency": {
+        "north": ["MONTANHA_LESTE", "MONTANHA_NORDESTE"],
+        "south": ["MONTANHA_LESTE", "MONTANHA_SUDESTE"],
+        "east":  ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "west":  ["MONTANHA_CENTRO"]
+      }
+    },
+    {
+      "id": "MONTANHA_SUL",
+      "weight": 0.5,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_sul",
+      "adjacency": {
+        "north": ["MONTANHA_CENTRO"],
+        "south": ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "east":  ["MONTANHA_SUL", "MONTANHA_SUDESTE"],
+        "west":  ["MONTANHA_SUL", "MONTANHA_SUDOESTE"]
+      }
+    },
+    {
+      "id": "MONTANHA_NOROESTE",
+      "weight": 1,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_noroeste",
+      "adjacency": {
+        "north": ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "south": ["MONTANHA_OESTE"],
+        "east":  ["MONTANHA_NORTE"],
+        "west":  ["ROCHA", "CRATERA", "TRANSPONIVEL"]
+      }
+    },
+    {
+      "id": "MONTANHA_NORDESTE",
+      "weight": 1,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_nordeste",
+      "adjacency": {
+        "north": ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "south": ["MONTANHA_LESTE"],
+        "east":  ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "west":  ["MONTANHA_NORTE"]
+      }
+    },
+    {
+      "id": "MONTANHA_SUDESTE",
+      "weight": 1,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_sudeste",
+      "adjacency": {
+        "north": ["MONTANHA_LESTE"],
+        "south": ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "east":  ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "west":  ["MONTANHA_SUL"]
+      }
+    },
+    {
+      "id": "MONTANHA_SUDOESTE",
+      "weight": 1,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_sudoeste",
+      "adjacency": {
+        "north": ["MONTANHA_OESTE"],
+        "south": ["ROCHA", "CRATERA", "TRANSPONIVEL"],
+        "east":  ["MONTANHA_SUL"],
+        "west":  ["ROCHA", "CRATERA", "TRANSPONIVEL"]
+      }
+    },
+    {
+      "id": "MONTANHA_CENTRO",
+      "weight": 0.5,
+      "traversal": "blocked",
+      "modelKey": "terrain_montanha_centro",
+      "adjacency": {
+        "north": ["MONTANHA_NORTE", "MONTANHA_CENTRO"],
+        "south": ["MONTANHA_SUL", "MONTANHA_CENTRO"],
+        "east":  ["MONTANHA_LESTE", "MONTANHA_CENTRO"],
+        "west":  ["MONTANHA_OESTE", "MONTANHA_CENTRO"]
+      }
     }
+
+
   ]
 }

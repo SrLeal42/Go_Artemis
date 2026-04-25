@@ -21,6 +21,16 @@ class MaterialManager {
         this.registerEmissive("terrain_objetivo",     new B.Color3(0.2, 0.8, 0.2));
         this.registerEmissive("objetivo_cubo",        new B.Color3(0, 1, 0));
         this.registerEmissive("terrain_surgimento",   new B.Color3(0.9, 0.8, 0.2));
+        // Montanha
+        this.registerEmissive("terrain_montanha_norte",   new B.Color3(1, 1, 1));
+        this.registerEmissive("terrain_montanha_oeste",   new B.Color3(.8, .8, .8));
+        this.registerEmissive("terrain_montanha_leste",   new B.Color3(.6, .6, .6));
+        this.registerEmissive("terrain_montanha_sul",   new B.Color3(.4, .4, .4));
+        this.registerEmissive("terrain_montanha_noroeste",   new B.Color3(.3, .3, .3));
+        this.registerEmissive("terrain_montanha_nordeste",   new B.Color3(.2, .2, .2));
+        this.registerEmissive("terrain_montanha_sudeste",   new B.Color3(.1, .1, .1));
+        this.registerEmissive("terrain_montanha_sudoeste",   new B.Color3(0, 0, 0));
+        this.registerEmissive("terrain_montanha_centro",   new B.Color3(.9, .9, .9));
         // Rover
         this.registerEmissive("rover_body",   new B.Color3(0.9, 0.4, 0.1));
         this.registerEmissive("rover_frente", new B.Color3(0.1, 0.1, 0.1));
