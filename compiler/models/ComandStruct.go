@@ -1,18 +1,5 @@
 package models
 
-// type Comand struct {
-// 	Action   string `json:"action"`              // ex: "AVANCA", "GIRA", "DETECTA"
-// 	Value    int    `json:"value,omitempty"`     // ex: 5 (para passos)
-// 	Diretion string `json:"direction,omitempty"` // ex: "ESQUERDA", "DIREITA"
-// }
-
-// type SimpleCmd struct {
-// 	Action string `json:"action"` // AVANCA
-// 	Value  int    `json:"value"`  // 5
-// }
-
-// func (c *SimpleCmd) CommandType() string { return c.Action }
-
 // Família 1: Movimentos (Exigem número)
 type MoveCmd struct {
 	Action string `json:"action"`
@@ -44,9 +31,20 @@ type RepeatCmd struct {
 func (c *RepeatCmd) CommandType() string { return "REPEAT" }
 
 type IfCmd struct {
-	Condition      string        `json:"condition"` // Ex: "OBSTACULO" ou "OBJETIVO"
-	Direction      string        `json:"direction"` // Ex: "ESQUERDA", "DIREITA"
+	Condition      string        `json:"condition"`
+	Negated        bool          `json:"negated"`
+	Direction      string        `json:"direction"`
 	InsideCommands []CommandNode `json:"commands"`
+	ElseCommands   []CommandNode `json:"elseCommands,omitempty"`
 }
 
 func (c *IfCmd) CommandType() string { return "IF" }
+
+type WhileCmd struct {
+	Condition      string        `json:"condition"`
+	Negated        bool          `json:"negated"`
+	Direction      string        `json:"direction"`
+	InsideCommands []CommandNode `json:"whileCommands"`
+}
+
+func (c *WhileCmd) CommandType() string { return "ENQUANTO" }

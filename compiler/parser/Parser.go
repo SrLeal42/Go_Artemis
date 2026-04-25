@@ -68,6 +68,9 @@ func (p *Parser) parseCommand() models.CommandNode {
 	case token.IF:
 		return p.parseIfCommand() // Chamamos a outra função complexa
 
+	case token.ENQUANTO:
+		return p.parseWhileCommand()
+
 	default:
 		p.errors = append(p.errors, models.CompilerError{
 			Line:    p.curToken.Line,
@@ -155,11 +158,17 @@ func (p *Parser) parseIfCommand() models.CommandNode {
 	// 1. O Token atual é o "IF". Vamos avançar para testar a primeira palavra (Condição).
 	p.nextToken()
 
+	if p.curToken.Type == token.NAO {
+		cmd.Negated = true
+		p.nextToken() // Avança para a condição real
+	}
+
 	// Garante que é uma condição válida usando '&&'
 	if p.curToken.Type != token.OBSTACULO &&
 		p.curToken.Type != token.OBJETIVO &&
-		p.curToken.Type != token.BORDA {
-		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: IF precisa ser seguido de OBSTACULO, OBJETIVO ou BORDA"})
+		p.curToken.Type != token.BORDA &&
+		p.curToken.Type != token.LIVRE {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: IF precisa ser seguido de OBSTACULO, OBJETIVO, BORDA ou LIVRE"})
 		return nil
 	}
 	cmd.Condition = p.curToken.Literal // Guarda no modelo (Ex: "OBSTACULO")
@@ -180,6 +189,59 @@ func (p *Parser) parseIfCommand() models.CommandNode {
 	}
 	p.nextToken() // Andamos o ponteiro para ficar em cima da chave '{'
 
+	cmd.InsideCommands = p.parseBlock()
+
+	if p.peekToken.Type == token.ELSE {
+		p.nextToken() // Consome o ELSE
+
+		if p.peekToken.Type != token.OBRACE {
+			p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Esperava '{' para iniciar o bloco do ELSE"})
+			return nil
+		}
+
+		p.nextToken() // Vai para '{'
+
+		cmd.ElseCommands = p.parseBlock()
+	}
+
+	return cmd
+}
+
+func (p *Parser) parseWhileCommand() models.CommandNode {
+	cmd := &models.WhileCmd{InsideCommands: []models.CommandNode{}}
+
+	// 1. Avança do ENQUANTO para a próxima palavra
+	p.nextToken()
+
+	if p.curToken.Type == token.NAO {
+		cmd.Negated = true
+		p.nextToken()
+	}
+
+	// 2. Garante que é uma condição válida
+	if p.curToken.Type != token.OBSTACULO &&
+		p.curToken.Type != token.OBJETIVO &&
+		p.curToken.Type != token.BORDA &&
+		p.curToken.Type != token.LIVRE {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: ENQUANTO precisa ser seguido de OBSTACULO, OBJETIVO, BORDA ou LIVRE"})
+		return nil
+	}
+	cmd.Condition = p.curToken.Literal
+
+	// 3. Lê a direção
+	p.nextToken()
+	if p.curToken.Type != token.ESQUERDA && p.curToken.Type != token.DIREITA && p.curToken.Type != token.FRENTE {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: ENQUANTO exige uma direção logo depois (ESQUERDA, DIREITA, FRENTE)"})
+		return nil
+	}
+	cmd.Direction = p.curToken.Literal
+
+	// 4. Espera '{'
+	if p.peekToken.Type != token.OBRACE {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Esperava '{' para iniciar o bloco do ENQUANTO"})
+		return nil
+	}
+	p.nextToken()
 	cmd.InsideCommands = p.parseBlock()
 
 	return cmd

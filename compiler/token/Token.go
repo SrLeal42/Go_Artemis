@@ -24,6 +24,7 @@ const (
 	OBSTACULO = "OBSTACULO"
 	OBJETIVO  = "OBJETIVO"
 	BORDA     = "BORDA"
+	LIVRE     = "LIVRE"
 
 	// Opcionais/Direções
 	ESQUERDA = "ESQUERDA"
@@ -34,10 +35,13 @@ const (
 	NUMERO = "NUMERO" // Vai representar 90, 5, 10, etc.
 
 	// Bonus
-	IF     = "IF"
-	REPEAT = "REPEAT"
+	IF       = "IF"
+	REPEAT   = "REPEAT"
+	ELSE     = "ELSE"
+	ENQUANTO = "ENQUANTO"
+	NAO      = "NAO"
 
 	// Símbolos
-	OBRACE = "{" // Left Brace (Chave Esquerda)
-	CBRACE = "}" // Right Brace (Chave Direita)
+	OBRACE = "{" // Open Brace (Chave Esquerda)
+	CBRACE = "}" // Close Brace (Chave Direita)
 )

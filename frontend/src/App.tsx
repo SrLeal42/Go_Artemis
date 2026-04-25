@@ -23,7 +23,7 @@ declare global {
 }
 
 function App() {
-  const [code, setCode] = useState<string>("REPEAT 5 {\n REPEAT 4 {\n IF OBSTACULO FRENTE { \n GIRA DIREITA\n }\n }\n AVANCA 1\n}");
+  const [code, setCode] = useState<string>("REPEAT 50 {\n\nENQUANTO NAO LIVRE FRENTE {\n\n IF LIVRE DIREITA {\n GIRA DIREITA \n } ELSE {\n GIRA ESQUERDA \n }\n\n}\n\nIF OBJETIVO DIREITA {\nGIRA DIREITA \n}\n\nIF OBJETIVO ESQUERDA {\nGIRA ESQUERDA\n}\n\nAVANCA 1\n}\n");
 
   const [activeCommands, setActiveCommands] = useState<CommandNode[]>([])
 
@@ -245,42 +245,6 @@ function App() {
               </div>
             )}
 
-
-              
-            {/* {simulationResult !== null && (
-                <div className="simulation-overlay">
-                    <div className="overlay-content">
-                        {simulationResult === SimulationStatus.SUCCESS ? (
-                            <>
-                                <span className="overlay-icon">🎯</span>
-                                <h2>Objetivo Alcançado!</h2>
-                                <p>O rover chegou ao destino com sucesso.</p>
-                            </>
-                        ) : (
-                            <>
-                                <span className="overlay-icon">💥</span>
-                                <h2>Simulação Falhou</h2>
-                                <p>O rover encontrou um problema durante a execução.</p>
-                            </>
-                        )}
-                        <div className="overlay-actions">
-                            <button className="overlay-btn btn-retry" onClick={() => {
-                                setSimulationResult(null);
-                                handleReset();
-                            }}>
-                                🔄 Reiniciar
-                            </button>
-                            <button className="overlay-btn btn-new" onClick={() => {
-                                setSimulationResult(null);
-                                handleNewLevel();
-                            }}>
-                                🎲 Novo Level
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )} */}
-          
           </div>
         </div>
 

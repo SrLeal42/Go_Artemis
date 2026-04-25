@@ -101,6 +101,8 @@ export class Scene3D {
         return cell.traversal === TileTraversal.BLOCKED;
       case "OBJETIVO":
         return cell.chosenTile === TerrainTypes.OBJETIVO;
+      case "LIVRE":
+        return cell.traversal === TileTraversal.PASSABLE;
 
     }
 

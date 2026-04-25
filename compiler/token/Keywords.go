@@ -13,6 +13,10 @@ var keywords = map[string]TokenType{
 	"FRENTE":    FRENTE,
 	"IF":        IF,
 	"REPEAT":    REPEAT,
+	"ELSE":      ELSE,
+	"ENQUANTO":  ENQUANTO,
+	"NAO":       NAO,
+	"LIVRE":     LIVRE,
 }
 
 // Essa função pega a palavra lida e vê se bate com nosso sistema do Rover

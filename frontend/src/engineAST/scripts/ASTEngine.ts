@@ -1,4 +1,4 @@
-import type { CommandNode, RepeatCmd, IfCmd } from '../models/CMDTypes';
+import type { CommandNode, RepeatCmd, IfCmd, WhileCmd } from '../models/CMDTypes';
 import type { FlatAction } from '../models/FlatActionType';
 
 export class ASTEngine {
@@ -19,17 +19,40 @@ export class ASTEngine {
         }
       }
       
+      // A verificação do WHILE precisa vir antes, pois o IF tbm tem 'condition'
+      else if ('whileCommands' in node) {
+        const whileNode = node as WhileCmd;
+        
+        while (true) {
+          let result = conditionVerification(whileNode.condition, whileNode.direction);
+        
+          if (whileNode.negated) result = !result;
+        
+          if (!result) break;
+        
+          yield* this.executeAST(whileNode.whileCommands, conditionVerification);
+        }
+
+      }
+
       // SE FOR UM IF:
       else if ('condition' in node) {
+        const ifNode = node as IfCmd;
         
-        const ifNode = (node as IfCmd);
+        let result = conditionVerification(ifNode.condition, ifNode.direction);
         
-        const conditionResponse = conditionVerification(ifNode.condition, ifNode.direction); 
-      
-        if (conditionResponse) {
-           yield* this.executeAST((node as IfCmd).commands, conditionVerification);
+        if (ifNode.negated) result = !result;
+        
+        if (result) {
+        
+          yield* this.executeAST(ifNode.commands, conditionVerification);
+        
+        } else if (ifNode.elseCommands && ifNode.elseCommands.length > 0) {
+        
+          yield* this.executeAST(ifNode.elseCommands, conditionVerification);
+        
         }
-      
+
       }
       
       // SE FOR UM COMANDO RETA (EX: AVANCA):
