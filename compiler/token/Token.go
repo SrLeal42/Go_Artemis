@@ -15,6 +15,7 @@ const (
 	// Tipos Especiais
 	ILLEGAL = "ILLEGAL" // Quando o cara digita um caractere que não existe, tipo @ ou $
 	EOF     = "EOF"     // "End Of File", marca o fim do arquivo lido
+	IDENT   = "IDENT"
 
 	// Identificadores + Palavras Chaves Principais do Rover
 	AVANCA    = "AVANCA"
@@ -25,6 +26,7 @@ const (
 	OBJETIVO  = "OBJETIVO"
 	BORDA     = "BORDA"
 	LIVRE     = "LIVRE"
+	MARCADO   = "MARCADO"
 
 	// Opcionais/Direções
 	ESQUERDA = "ESQUERDA"
@@ -40,6 +42,8 @@ const (
 	ELSE     = "ELSE"
 	ENQUANTO = "ENQUANTO"
 	NAO      = "NAO"
+	MARCAR   = "MARCAR"
+	FUNCAO   = "FUNCAO"
 
 	// Símbolos
 	OBRACE = "{" // Open Brace (Chave Esquerda)

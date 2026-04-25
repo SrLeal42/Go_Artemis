@@ -23,7 +23,31 @@ declare global {
 }
 
 function App() {
-  const [code, setCode] = useState<string>("REPEAT 50 {\n\nENQUANTO NAO LIVRE FRENTE {\n\n IF LIVRE DIREITA {\n GIRA DIREITA \n } ELSE {\n GIRA ESQUERDA \n }\n\n}\n\nIF OBJETIVO DIREITA {\nGIRA DIREITA \n}\n\nIF OBJETIVO ESQUERDA {\nGIRA ESQUERDA\n}\n\nAVANCA 1\n}\n");
+  const [code, setCode] = useState<string>("FUNCAO Verifica_Frente_e_Gira {\n\nENQUANTO NAO LIVRE FRENTE {\n\nIF LIVRE DIREITA {\n GIRA DIREITA\n} ELSE {\n GIRA ESQUERDA\n}\n\n}\n\n}\n\nREPEAT 50 {\n\nVerifica_Frente_e_Gira\n\nIF OBJETIVO DIREITA {\nGIRA DIREITA \n}\n\nIF OBJETIVO ESQUERDA {\nGIRA ESQUERDA\n}\n\nAVANCA 1\n}\n");
+  // const [code, setCode] = useState<string>(
+  //   "FUNCAO explorar {\n" +
+  //   "MARCAR\n\n" +
+  //   "ENQUANTO NAO LIVRE FRENTE {\n" +
+  //   "  GIRA DIREITA\n" +
+  //   "}\n\n" +
+  //   "IF MARCADO FRENTE {\n" +
+  //   "  GIRA ESQUERDA\n" +
+  //   "  IF MARCADO FRENTE {\n" +
+  //   "    GIRA ESQUERDA\n" +
+  //   "  }\n" +
+  //   "}\n\n" +
+  //   "AVANCA 1\n" +
+  //   "}\n\n" +
+  //   "REPEAT 50 {\n" +
+  //   "explorar\n\n" +
+  //   "IF OBJETIVO DIREITA {\n" +
+  //   "  GIRA DIREITA\n" +
+  //   "}\n\n" +
+  //   "IF OBJETIVO ESQUERDA {\n" +
+  //   "  GIRA ESQUERDA\n" +
+  //   "}\n" +
+  //   "}\n"
+  // );
 
   const [activeCommands, setActiveCommands] = useState<CommandNode[]>([])
 

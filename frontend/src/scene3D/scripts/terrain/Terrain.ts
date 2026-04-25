@@ -11,7 +11,7 @@ export class Terrain {
 
     public scene: B.Scene;
 
-    public terrainGrid : Map<string, TerrainCell> = new Map();;
+    public terrainGrid : Map<string, TerrainCell> = new Map();
     
     public gridSize = 5;
 
@@ -115,6 +115,12 @@ export class Terrain {
 
     }
 
+
+    public reset(): void {
+        for (const cell of this.terrainGrid.values()){
+            cell.reset();
+        } 
+    }
 
 
 

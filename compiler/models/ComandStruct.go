@@ -48,3 +48,25 @@ type WhileCmd struct {
 }
 
 func (c *WhileCmd) CommandType() string { return "ENQUANTO" }
+
+type MarkerCmd struct {
+	Action string `json:"action"`
+}
+
+func (c *MarkerCmd) CommandType() string { return c.Action }
+
+// Definição de Função
+type FuncDefCmd struct {
+	Name           string        `json:"funcName"`
+	InsideCommands []CommandNode `json:"funcCommands"`
+}
+
+func (c *FuncDefCmd) CommandType() string { return "FUNCAO" }
+
+// Chamada de Função
+type FuncCallCmd struct {
+	Name string `json:"callName"`
+	Line int    `json:"-"`
+}
+
+func (c *FuncCallCmd) CommandType() string { return "CALL" }

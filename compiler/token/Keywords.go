@@ -17,12 +17,14 @@ var keywords = map[string]TokenType{
 	"ENQUANTO":  ENQUANTO,
 	"NAO":       NAO,
 	"LIVRE":     LIVRE,
+	"MARCADO":   MARCADO,
+	"MARCAR":    MARCAR,
+	"FUNCAO":    FUNCAO,
 }
 
-// Essa função pega a palavra lida e vê se bate com nosso sistema do Rover
 func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {
 		return tok
 	}
-	return ILLEGAL // Se não achou na lista acima, o comando não existe!
+	return IDENT // Agora palavras desconhecidas viram identificadores, não erros!
 }

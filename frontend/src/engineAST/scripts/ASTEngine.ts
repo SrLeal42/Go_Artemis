@@ -1,4 +1,4 @@
-import type { CommandNode, RepeatCmd, IfCmd, WhileCmd } from '../models/CMDTypes';
+import type { CommandNode, RepeatCmd, IfCmd, WhileCmd, FuncDefCmd } from '../models/CMDTypes';
 import type { FlatAction } from '../models/FlatActionType';
 
 export class ASTEngine {
@@ -7,15 +7,29 @@ export class ASTEngine {
   // Ela não retorna uma Array (lista), retorna um "Iterador" pausável.
   public static *executeAST(
     nodes: CommandNode[],
-    conditionVerification: (condition: string, diretion: string) => boolean
+    conditionVerification: (condition: string, diretion: string) => boolean,
+    funcTable: Map<string, CommandNode[]> = new Map()
   ): IterableIterator<FlatAction> {
+
     for (const node of nodes) {
+      if ('funcName' in node) {
+        const def = node as FuncDefCmd;
+        funcTable.set(def.funcName, def.funcCommands);
+      }
+    }
+
+    for (const node of nodes) {
+
+      // Pula definições de função (já foram coletadas acima)
+      if ('funcName' in node) {
+        continue;
+      }
       
       // SE FOR UM LOOP:
       if ('times' in node) {
         for (let i = 0; i < (node as RepeatCmd).times; i++) {
           // O yield* (com asterisco) diz para o iterador repassar a extração para os filhos
-          yield* this.executeAST((node as RepeatCmd).commands, conditionVerification);
+          yield* this.executeAST((node as RepeatCmd).commands, conditionVerification, funcTable);
         }
       }
       
@@ -30,7 +44,7 @@ export class ASTEngine {
         
           if (!result) break;
         
-          yield* this.executeAST(whileNode.whileCommands, conditionVerification);
+          yield* this.executeAST(whileNode.whileCommands, conditionVerification, funcTable);
         }
 
       }
@@ -45,7 +59,7 @@ export class ASTEngine {
         
         if (result) {
         
-          yield* this.executeAST(ifNode.commands, conditionVerification);
+          yield* this.executeAST(ifNode.commands, conditionVerification, funcTable);
         
         } else if (ifNode.elseCommands && ifNode.elseCommands.length > 0) {
         
@@ -53,6 +67,14 @@ export class ASTEngine {
         
         }
 
+      }
+
+      else if ('callName' in node) {
+        const name = (node as { callName: string }).callName;
+        const body = funcTable.get(name);
+        if (body) {
+          yield* this.executeAST(body, conditionVerification, funcTable);
+        }
       }
       
       // SE FOR UM COMANDO RETA (EX: AVANCA):

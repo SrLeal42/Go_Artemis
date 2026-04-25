@@ -34,6 +34,8 @@ class MaterialManager {
         // Rover
         this.registerEmissive("rover_body",   new B.Color3(0.9, 0.4, 0.1));
         this.registerEmissive("rover_frente", new B.Color3(0.1, 0.1, 0.1));
+        // Marcador
+        this.registerEmissive("marcador", new B.Color3(1, 0, 0));
     }
 
 

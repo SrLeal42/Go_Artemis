@@ -71,6 +71,15 @@ func (p *Parser) parseCommand() models.CommandNode {
 	case token.ENQUANTO:
 		return p.parseWhileCommand()
 
+	case token.MARCAR:
+		return &models.MarkerCmd{Action: p.curToken.Literal}
+
+	case token.FUNCAO:
+		return p.parseFuncDef()
+
+	case token.IDENT:
+		return &models.FuncCallCmd{Name: p.curToken.Literal, Line: p.curToken.Line}
+
 	default:
 		p.errors = append(p.errors, models.CompilerError{
 			Line:    p.curToken.Line,
@@ -167,8 +176,9 @@ func (p *Parser) parseIfCommand() models.CommandNode {
 	if p.curToken.Type != token.OBSTACULO &&
 		p.curToken.Type != token.OBJETIVO &&
 		p.curToken.Type != token.BORDA &&
-		p.curToken.Type != token.LIVRE {
-		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: IF precisa ser seguido de OBSTACULO, OBJETIVO, BORDA ou LIVRE"})
+		p.curToken.Type != token.LIVRE &&
+		p.curToken.Type != token.MARCADO {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: IF precisa ser seguido de OBSTACULO, OBJETIVO, BORDA, LIVRE ou MARCADO"})
 		return nil
 	}
 	cmd.Condition = p.curToken.Literal // Guarda no modelo (Ex: "OBSTACULO")
@@ -222,8 +232,9 @@ func (p *Parser) parseWhileCommand() models.CommandNode {
 	if p.curToken.Type != token.OBSTACULO &&
 		p.curToken.Type != token.OBJETIVO &&
 		p.curToken.Type != token.BORDA &&
-		p.curToken.Type != token.LIVRE {
-		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: ENQUANTO precisa ser seguido de OBSTACULO, OBJETIVO, BORDA ou LIVRE"})
+		p.curToken.Type != token.LIVRE &&
+		p.curToken.Type != token.MARCADO {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Erro de sintaxe: ENQUANTO precisa ser seguido de OBSTACULO, OBJETIVO, BORDA, LIVRE ou MARCADO"})
 		return nil
 	}
 	cmd.Condition = p.curToken.Literal
@@ -247,7 +258,65 @@ func (p *Parser) parseWhileCommand() models.CommandNode {
 	return cmd
 }
 
-// Uma função extra pra você testar depois no Main.go se o Parse passou limpo
+func (p *Parser) parseFuncDef() models.CommandNode {
+	cmd := &models.FuncDefCmd{InsideCommands: []models.CommandNode{}}
+
+	if p.peekToken.Type != token.IDENT {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "FUNCAO precisa ser seguido de um nome (ex: FUNCAO esquiva)"})
+		return nil
+	}
+
+	p.nextToken()
+	cmd.Name = p.curToken.Literal
+
+	if p.peekToken.Type != token.OBRACE {
+		p.errors = append(p.errors, models.CompilerError{Line: p.curToken.Line, Message: "Esperava '{' para iniciar o bloco da FUNCAO"})
+		return nil
+	}
+
+	p.nextToken()
+	cmd.InsideCommands = p.parseBlock()
+
+	return cmd
+}
+
+// Validação semântica: verifica se todas as chamadas de função referenciam funções existentes
+func (p *Parser) ValidateFunctions(program []models.CommandNode) {
+	// 1. Coleta todas as definições de FUNCAO
+	funcNames := map[string]bool{}
+	for _, cmd := range program {
+		if def, ok := cmd.(*models.FuncDefCmd); ok {
+			funcNames[def.Name] = true
+		}
+	}
+
+	// 2. Procura chamadas sem definição
+	p.checkCalls(program, funcNames)
+}
+
+func (p *Parser) checkCalls(nodes []models.CommandNode, funcNames map[string]bool) {
+	for _, cmd := range nodes {
+		switch c := cmd.(type) {
+		case *models.FuncCallCmd:
+			if !funcNames[c.Name] {
+				p.errors = append(p.errors, models.CompilerError{
+					Line:    c.Line,
+					Message: "Função '" + c.Name + "' não foi definida",
+				})
+			}
+		case *models.RepeatCmd:
+			p.checkCalls(c.InsideCommands, funcNames)
+		case *models.IfCmd:
+			p.checkCalls(c.InsideCommands, funcNames)
+			p.checkCalls(c.ElseCommands, funcNames)
+		case *models.WhileCmd:
+			p.checkCalls(c.InsideCommands, funcNames)
+		case *models.FuncDefCmd:
+			p.checkCalls(c.InsideCommands, funcNames)
+		}
+	}
+}
+
 func (p *Parser) Errors() []models.CompilerError {
 	return p.errors
 }

@@ -103,12 +103,18 @@ export class Scene3D {
         return cell.chosenTile === TerrainTypes.OBJETIVO;
       case "LIVRE":
         return cell.traversal === TileTraversal.PASSABLE;
+      case "MARCADO":
+        return cell.marked === true;
 
     }
 
     return false;
   }
 
+  public reset(): void {
+    this.resetRover();
+    this.terrain.reset();
+  }
 
   public resetRover(): void {
     const spawn = this.terrain.spawnPosition;
@@ -131,6 +137,15 @@ export class Scene3D {
     
     this.resetRover();
 
+  }
+
+  public markCurrentCell(): void {
+      const [rx, rz] = this.rover.getGridPosition();
+      const cellKey = `${rx},0,${rz}`;
+      const cell = this.terrain.terrainGrid.get(cellKey);
+      if (cell) {
+          cell.mark();
+      }
   }
 
 

@@ -17,6 +17,9 @@ export class TerrainCell {
     public chosenTile: number | null;
     public traversal: number | null;
 
+    public marked: boolean = false;
+    public markerMesh: B.AbstractMesh;
+
     public modelKey: string | null;
     public static cellSize = 5;
     public meshSize = TerrainCell.cellSize * .95;//* .5;
@@ -62,7 +65,42 @@ export class TerrainCell {
     }
 
 
+    public mark(): void {
+
+        if (this.markerMesh){
+            this.markerMesh.dispose();
+            this.markerMesh = null;
+        }
+
+        const instance = ModelInstance.createInstance('marcador', `marcador_${this.x}_${this.z}`);
+        instance.position = new B.Vector3(
+            this.x * TerrainCell.cellSize,
+            this.y * TerrainCell.cellSize + .5,
+            this.z * TerrainCell.cellSize
+        );
+
+        this.markerMesh = instance;
+
+        this.marked = true;
+    }
+
+    
+    public reset(): void {
+        if (this.markerMesh){
+            this.markerMesh.dispose();
+            this.markerMesh = null;
+        }
+
+        this.marked = false;
+    }
+
+
     public disposeMesh() : void {
+
+        if (this.markerMesh){
+            this.markerMesh.dispose();
+            this.markerMesh = null;
+        }
 
         if (this.meshNode){
             this.meshNode.dispose(); 

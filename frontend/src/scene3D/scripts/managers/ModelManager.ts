@@ -48,6 +48,11 @@ class ModelManager {
         masterRoverFrente.material = MaterialInstance.getMaterial("rover_frente");
         masterRoverFrente.setEnabled(false);
         this.masterMeshes.set("rover_frente", masterRoverFrente);
+
+        const masterMarcador = B.MeshBuilder.CreateBox("master_marcador", {}, this.scene);
+        masterMarcador.material = MaterialInstance.getMaterial("marcador");
+        masterMarcador.setEnabled(false);
+        this.masterMeshes.set("marcador", masterMarcador);
     }
 
 

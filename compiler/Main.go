@@ -52,6 +52,7 @@ func Compile(script string) string {
 
 	compileParser := parser.New(compileLexer)
 	compileComands := compileParser.ParseProgram()
+	compileParser.ValidateFunctions(compileComands)
 	compileErrors := compileParser.Errors()
 
 	resultado := models.CompilerResult{

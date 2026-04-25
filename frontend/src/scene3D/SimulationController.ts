@@ -28,7 +28,7 @@ export class SimulationController {
     public reset(): void {
         this.stop();
 
-        this.scene3D.resetRover();
+        this.scene3D.reset();
     }
 
     public stop(): void {
@@ -105,7 +105,11 @@ export class SimulationController {
                 const giraDir = RoverRelativeDirection[acao.direction as keyof typeof RoverRelativeDirection];
                 await this.scene3D.rover.turn(giraDir);
                 break;
+            
             }
+            case "MARCAR":
+                this.scene3D.markCurrentCell();
+                break;
         }
     }
 
