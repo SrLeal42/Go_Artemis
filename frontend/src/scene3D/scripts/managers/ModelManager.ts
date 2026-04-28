@@ -33,6 +33,16 @@ class ModelManager {
         this.registerTerrainPlane("terrain_montanha_sudeste",    "terrain_montanha_sudeste");
         this.registerTerrainPlane("terrain_montanha_sudoeste",    "terrain_montanha_sudoeste");
         this.registerTerrainPlane("terrain_montanha_centro",    "terrain_montanha_centro");
+        // Cratera Grande
+        this.registerTerrainPlane("terrain_cratera_norte",    "terrain_cratera_norte");
+        this.registerTerrainPlane("terrain_cratera_oeste",    "terrain_cratera_oeste");
+        this.registerTerrainPlane("terrain_cratera_leste",    "terrain_cratera_leste");
+        this.registerTerrainPlane("terrain_cratera_sul",    "terrain_cratera_sul");
+        this.registerTerrainPlane("terrain_cratera_noroeste",    "terrain_cratera_noroeste");
+        this.registerTerrainPlane("terrain_cratera_nordeste",    "terrain_cratera_nordeste");
+        this.registerTerrainPlane("terrain_cratera_sudeste",    "terrain_cratera_sudeste");
+        this.registerTerrainPlane("terrain_cratera_sudoeste",    "terrain_cratera_sudoeste");
+        this.registerTerrainPlane("terrain_cratera_centro",    "terrain_cratera_centro");
 
         const masterObjetivoCube = B.MeshBuilder.CreateBox("master_objetivo_cubo", {}, this.scene);
         masterObjetivoCube.material = MaterialInstance.getMaterial("objetivo_cubo");

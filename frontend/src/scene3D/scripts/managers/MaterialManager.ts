@@ -31,6 +31,16 @@ class MaterialManager {
         this.registerEmissive("terrain_montanha_sudeste",   new B.Color3(.1, .1, .1));
         this.registerEmissive("terrain_montanha_sudoeste",   new B.Color3(0, 0, 0));
         this.registerEmissive("terrain_montanha_centro",   new B.Color3(.9, .9, .9));
+        // Cratera Grande
+        this.registerEmissive("terrain_cratera_norte",   new B.Color3(1, .5, 1));
+        this.registerEmissive("terrain_cratera_oeste",   new B.Color3(.8, 1, .8));
+        this.registerEmissive("terrain_cratera_leste",   new B.Color3(.6, 1, .6));
+        this.registerEmissive("terrain_cratera_sul",   new B.Color3(.4, 1, .4));
+        this.registerEmissive("terrain_cratera_noroeste",   new B.Color3(.3, 1, .3));
+        this.registerEmissive("terrain_cratera_nordeste",   new B.Color3(.2, 1, .2));
+        this.registerEmissive("terrain_cratera_sudeste",   new B.Color3(.1, 1, .1));
+        this.registerEmissive("terrain_cratera_sudoeste",   new B.Color3(0, 1, 0));
+        this.registerEmissive("terrain_cratera_centro",   new B.Color3(.9, 1, .9));
         // Rover
         this.registerEmissive("rover_body",   new B.Color3(0.9, 0.4, 0.1));
         this.registerEmissive("rover_frente", new B.Color3(0.1, 0.1, 0.1));

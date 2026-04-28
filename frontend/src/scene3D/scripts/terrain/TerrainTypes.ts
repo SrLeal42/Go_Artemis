@@ -14,6 +14,16 @@ export const TerrainTypes = {
     MONTANHA_SUDESTE: 11,
     MONTANHA_SUDOESTE: 12,
     MONTANHA_CENTRO: 13,
+
+    CRATERA_NORTE: 14,
+    CRATERA_OESTE: 15,
+    CRATERA_LESTE: 16,
+    CRATERA_SUL: 17,
+    CRATERA_NOROESTE: 18,
+    CRATERA_NORDESTE: 19,
+    CRATERA_SUDESTE: 20,
+    CRATERA_SUDOESTE: 21,
+    CRATERA_CENTRO: 22,
 } as const;
 
 export type TerrainTypes = typeof TerrainTypes[keyof typeof TerrainTypes];
@@ -25,15 +35,25 @@ export const TILE_ID_TO_TYPE: Record<string, number> = {
     "OBJETIVO":     TerrainTypes.OBJETIVO,
     "SURGIMENTO":   TerrainTypes.SURGIMENTO,
 
-    "MONTANHA_NORTE":   TerrainTypes.MONTANHA_NORTE,
-    "MONTANHA_OESTE":   TerrainTypes.MONTANHA_OESTE,
-    "MONTANHA_LESTE":   TerrainTypes.MONTANHA_LESTE,
-    "MONTANHA_SUL":   TerrainTypes.MONTANHA_SUL,
-    "MONTANHA_NOROESTE":   TerrainTypes.MONTANHA_NOROESTE,
-    "MONTANHA_NORDESTE":   TerrainTypes.MONTANHA_NORDESTE,
+    "MONTANHA_NORTE":     TerrainTypes.MONTANHA_NORTE,
+    "MONTANHA_OESTE":     TerrainTypes.MONTANHA_OESTE,
+    "MONTANHA_LESTE":     TerrainTypes.MONTANHA_LESTE,
+    "MONTANHA_SUL":       TerrainTypes.MONTANHA_SUL,
+    "MONTANHA_NOROESTE":  TerrainTypes.MONTANHA_NOROESTE,
+    "MONTANHA_NORDESTE":  TerrainTypes.MONTANHA_NORDESTE,
     "MONTANHA_SUDESTE":   TerrainTypes.MONTANHA_SUDESTE,
-    "MONTANHA_SUDOESTE":   TerrainTypes.MONTANHA_SUDOESTE,
-    "MONTANHA_CENTRO":   TerrainTypes.MONTANHA_CENTRO,
+    "MONTANHA_SUDOESTE":  TerrainTypes.MONTANHA_SUDOESTE,
+    "MONTANHA_CENTRO":    TerrainTypes.MONTANHA_CENTRO,
+
+    "CRATERA_NORTE":      TerrainTypes.CRATERA_NORTE,
+    "CRATERA_OESTE":      TerrainTypes.CRATERA_OESTE,
+    "CRATERA_LESTE":      TerrainTypes.CRATERA_LESTE,
+    "CRATERA_SUL":        TerrainTypes.CRATERA_SUL,
+    "CRATERA_NOROESTE":   TerrainTypes.CRATERA_NOROESTE,
+    "CRATERA_NORDESTE":   TerrainTypes.CRATERA_NORDESTE,
+    "CRATERA_SUDESTE":    TerrainTypes.CRATERA_SUDESTE,
+    "CRATERA_SUDOESTE":   TerrainTypes.CRATERA_SUDOESTE,
+    "CRATERA_CENTRO":     TerrainTypes.CRATERA_CENTRO,
 };
 
 
