@@ -11,7 +11,7 @@ export interface RoverSceneHandle {
     regenerateTerrain: () => void;
 }
 
-export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimulationEnd?: (status: SimulationStatus, message?: string) => void }>(
+export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimulationEnd?: (status: SimulationStatus, message?: string, steps?: number) => void }>(
     ({ commands, onSimulationEnd }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -43,8 +43,8 @@ export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimula
     
     if (!commands || commands.length === 0 || !controllerRef.current) return;
   
-    controllerRef.current.run(commands, (status, message) => {
-        onSimulationEnd?.(status, message);
+    controllerRef.current.run(commands, (status, message, steps?: number) => {
+        onSimulationEnd?.(status, message, steps);
     });
     
     return () => {

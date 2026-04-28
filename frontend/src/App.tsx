@@ -60,6 +60,7 @@ function App() {
   const [simulationResult, setSimulationResult] = useState<SimulationStatus | null>(null);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [stepCount, setStepCount] = useState<number>(0);
 
   const [isTopView, setIsTopView] = useState(true);
   const handleCameraToggle = () => {
@@ -149,8 +150,10 @@ function App() {
     resetSimulationVariables();
   };
 
-  const handleSimulationEnd = (status: SimulationStatus, message?: string) => {
+  const handleSimulationEnd = (status: SimulationStatus, message?: string, steps?: number) => {
     setIsSimulating(false);
+    console.log(steps)
+    setStepCount(steps ?? 0);
     
     if (status === SimulationStatus.SUCCESS || status === SimulationStatus.ERROR || status === SimulationStatus.END) {
       setSimulationResult(status);
@@ -236,12 +239,14 @@ function App() {
                               <span className="overlay-icon">🎯</span>
                               <h2>Objetivo Alcançado!</h2>
                               <p>O rover chegou ao destino com sucesso.</p>
+                              <p>Forma nescessários <strong>{stepCount}</strong> passos.</p>
                           </>
                       )}
                       {simulationResult === SimulationStatus.ERROR && (
                           <>
                               <span className="overlay-icon">💥</span>
                               <h2>Simulação Falhou</h2>
+                              <p>O rover deu <strong>{stepCount}</strong> passos antes de falhar.</p>
                               <p>{errorMessage || "O rover encontrou um problema durante a execução."}</p>
                           </>
                       )}
@@ -250,6 +255,7 @@ function App() {
                               <span className="overlay-icon">🏁</span>
                               <h2>Trajetória Incompleta</h2>
                               <p>Os comandos acabaram, mas o rover não chegou ao objetivo.</p>
+                              <p>O rover deu <strong>{stepCount}</strong> passos.</p>
                           </>
                       )}
                       <div className="overlay-actions">

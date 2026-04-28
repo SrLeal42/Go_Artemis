@@ -14,6 +14,8 @@ export class SimulationController {
     private status: SimulationStatus = SimulationStatus.IDLE;
     private isCancelled = false;
 
+    private stepCount = 0;
+
     constructor(scene3D: Scene3D) {
         this.scene3D = scene3D;
     }
@@ -27,7 +29,7 @@ export class SimulationController {
      */
     public reset(): void {
         this.stop();
-
+        this.stepCount = 0;
         this.scene3D.reset();
     }
 
@@ -44,7 +46,7 @@ export class SimulationController {
     /**
      * Executa a simulação completa a partir de uma lista de comandos AST.
      */
-    public async run(commands: CommandNode[], onEnd?: (status: SimulationStatus, message?: string) => void): Promise<void> {
+    public async run(commands: CommandNode[], onEnd?: (status: SimulationStatus, message?: string, steps?: number) => void): Promise<void> {
         // Sempre reseta antes de começar
         this.reset();
 
@@ -85,7 +87,7 @@ export class SimulationController {
 
         
         finally {
-            onEnd?.(this.status, errorMessage);
+            onEnd?.(this.status, errorMessage, this.stepCount);
         }
 
     }
@@ -126,6 +128,8 @@ export class SimulationController {
 
             // Seguro — move 1 célula
             await this.scene3D.rover.move(targetX, targetZ, direction);
+
+            this.stepCount++;
 
         }
     }
