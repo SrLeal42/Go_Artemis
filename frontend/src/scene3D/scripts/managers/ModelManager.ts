@@ -21,8 +21,8 @@ class ModelManager {
         
         // this.registerTerrainPlane("terrain_default",       "terrain_transponivel");
         // this.registerTerrainPlane("terrain_transponivel",  "terrain_transponivel");
-        this.registerTerrainPlane("terrain_rocha",         "terrain_rocha");
-        this.registerTerrainPlane("terrain_cratera",       "terrain_cratera");
+        // this.registerTerrainPlane("terrain_rocha",         "terrain_rocha");
+        // this.registerTerrainPlane("terrain_cratera",       "terrain_cratera");
         this.registerTerrainPlane("terrain_objetivo",      "terrain_objetivo");
         this.registerTerrainPlane("terrain_surgimento",    "terrain_surgimento");
         // Montanha
@@ -61,16 +61,20 @@ class ModelManager {
         masterRoverFrente.setEnabled(false);
         this.masterMeshes.set("rover_frente", masterRoverFrente);
 
-        const masterMarcador = B.MeshBuilder.CreateBox("master_marcador", {}, this.scene);
-        masterMarcador.material = MaterialInstance.getMaterial("marcador");
-        masterMarcador.setEnabled(false);
-        this.masterMeshes.set("marcador", masterMarcador);
+        // const masterMarcador = B.MeshBuilder.CreateBox("master_marcador", {}, this.scene);
+        // masterMarcador.material = MaterialInstance.getMaterial("marcador");
+        // masterMarcador.setEnabled(false);
+        // this.masterMeshes.set("marcador", masterMarcador);
 
 
 
         await Promise.all([
             this.loadModel("terrain_default",        "/models/terrain/TRANSPONIVEL.glb", .5),
             this.loadModel("terrain_transponivel",   "/models/terrain/TRANSPONIVEL.glb", .5),
+            this.loadModel("terrain_cratera",   "/models/terrain/CRATERA.glb", .5),
+            this.loadModel("terrain_rocha",   "/models/terrain/ROCHA.glb", .5),
+            this.loadModel("terrain_objetivo",   "/models/terrain/OBJETIVO.glb", .5),
+            this.loadModel("marcador",   "/models/others/MARCADOR.glb", 2),
         ]);
 
     }

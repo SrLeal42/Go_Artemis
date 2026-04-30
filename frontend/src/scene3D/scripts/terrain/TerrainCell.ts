@@ -22,7 +22,7 @@ export class TerrainCell {
 
     public modelKey: string | null;
     public static cellSize = 5;
-    public meshSize = TerrainCell.cellSize * .95;//* .5;
+    public meshSize = TerrainCell.cellSize //* .95;//* .5;
     public mesh!: B.AbstractMesh | null;
     public meshNode!: B.TransformNode | null;
 
@@ -67,6 +67,10 @@ export class TerrainCell {
 
     public mark(): void {
 
+        if (this.marked) {
+            return;
+        }
+
         if (this.markerMesh){
             this.markerMesh.dispose();
             this.markerMesh = null;
@@ -75,7 +79,7 @@ export class TerrainCell {
         const instance = ModelInstance.createInstance('marcador', `marcador_${this.x}_${this.z}`);
         instance.position = new B.Vector3(
             this.x * TerrainCell.cellSize,
-            this.y * TerrainCell.cellSize + .5,
+            this.y * TerrainCell.cellSize,
             this.z * TerrainCell.cellSize
         );
 
