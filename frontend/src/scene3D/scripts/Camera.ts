@@ -25,7 +25,7 @@ export class Camera {
         this.arcCamera.setTarget(roverPivot);
         
         this.arcCamera.lowerRadiusLimit = 4;
-        this.arcCamera.upperBetaLimit = (Math.PI / 2) * 0.9; 
+        // this.arcCamera.upperBetaLimit = (Math.PI / 2) * 0.9; 
 
         // Liga os crontoles do mouse na câmera atual
         this.arcCamera.attachControl(this.canvas, true);

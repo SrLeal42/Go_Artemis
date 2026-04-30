@@ -31,7 +31,13 @@ export class Scene3D {
     this.canvas = canvas;
     this.engine = new B.Engine(this.canvas, true);
 
-    const scene = this.createScene();
+    this.initialize();
+
+  }
+
+
+  public async initialize() : Promise<void> {
+    const scene = await this.createScene();
     this.scene = scene;
 
     if (this.canvas.parentElement) {
@@ -46,11 +52,10 @@ export class Scene3D {
         scene.render();
     });
 
-
   }
 
 
-  private createScene() : B.Scene {
+  private async createScene() : Promise<B.Scene> {
 
     const scene = new B.Scene(this.engine);
     scene.clearColor = new B.Color4(0.06, 0.09, 0.16, 1);
@@ -59,7 +64,7 @@ export class Scene3D {
     light.intensity = 0.8;
 
     MaterialInstance.initialize(scene);
-    ModelInstance.initialize(scene);
+    await ModelInstance.initialize(scene);
 
 
     this.terrain = new Terrain(scene);
@@ -150,12 +155,19 @@ export class Scene3D {
 
 
   public dispose() {
+    
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
     
-    this.scene.dispose();
-    this.engine.dispose();
+    if (this.scene){
+      this.scene.dispose();
+    }
+
+    if (this.engine){
+      this.engine.dispose();
+    }
+
   }
 
 

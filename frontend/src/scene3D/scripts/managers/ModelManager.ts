@@ -1,4 +1,6 @@
 import * as B from '@babylonjs/core';
+import '@babylonjs/loaders/glTF';
+
 import { MaterialInstance } from './MaterialManager';
 
 class ModelManager {
@@ -9,16 +11,16 @@ class ModelManager {
     public async initialize(scene: B.Scene): Promise<void> {
 
         this.scene = scene;
-        this.initializeModels();
+        await this.initializeModels();
 
     }
 
 
     // Registra todos os modelos mestres aqui
-    private initializeModels(): void {
+    private async initializeModels(): Promise<void> {
         
-        this.registerTerrainPlane("terrain_default",       "terrain_transponivel");
-        this.registerTerrainPlane("terrain_transponivel",  "terrain_transponivel");
+        // this.registerTerrainPlane("terrain_default",       "terrain_transponivel");
+        // this.registerTerrainPlane("terrain_transponivel",  "terrain_transponivel");
         this.registerTerrainPlane("terrain_rocha",         "terrain_rocha");
         this.registerTerrainPlane("terrain_cratera",       "terrain_cratera");
         this.registerTerrainPlane("terrain_objetivo",      "terrain_objetivo");
@@ -63,6 +65,14 @@ class ModelManager {
         masterMarcador.material = MaterialInstance.getMaterial("marcador");
         masterMarcador.setEnabled(false);
         this.masterMeshes.set("marcador", masterMarcador);
+
+
+
+        await Promise.all([
+            this.loadModel("terrain_default",        "/models/terrain/TRANSPONIVEL.glb", .5),
+            this.loadModel("terrain_transponivel",   "/models/terrain/TRANSPONIVEL.glb", .5),
+        ]);
+
     }
 
 
@@ -77,6 +87,17 @@ class ModelManager {
         return master.createInstance(instanceName);
     }
 
+    public createClone(masterKey: string, cloneName: string): B.Mesh {
+        const master = this.masterMeshes.get(masterKey);
+    
+        if (!master) throw new Error(`Modelo "${masterKey}" não encontrado.`);
+        
+        const cloned = master.clone(cloneName, null)!;
+        cloned.setEnabled(true);
+    
+        return cloned;
+    }
+
 
     private registerTerrainPlane(key: string, materialKey: string): void {
         const mesh = B.MeshBuilder.CreatePlane(`master_${key}`, {}, this.scene);
@@ -85,6 +106,70 @@ class ModelManager {
         mesh.setEnabled(false);
         this.masterMeshes.set(key, mesh);
     }
+
+
+    private async loadModel(
+        key: string,
+        path: string,
+        scaleFactor?: number
+    ): Promise<void> {
+
+        const result = await B.SceneLoader.ImportMeshAsync(
+            "",       // meshNames: "" = importar tudo
+            "",       // rootUrl: "" porque o path já é absoluto do servidor
+            path,     // caminho do arquivo
+            this.scene
+        );
+
+        // ImportMeshAsync retorna { meshes, particleSystems, skeletons, animationGroups }
+        // meshes[0] geralmente é o __root__ (nó raiz do glTF)
+        const root = result.meshes[0];
+        root.setEnabled(false);
+
+        // Se o modelo tiver sub-meshes, merge tudo em um único Mesh
+        // para poder usar createInstance() depois
+        const children = root.getChildMeshes(false) as B.Mesh[];
+
+        if (children.length === 1 && children[0] instanceof B.Mesh) {
+            // Caso simples: modelo com um único mesh
+            children[0].parent = null;
+            children[0].setEnabled(false);
+            
+            if (scaleFactor) {
+                children[0].scaling = new B.Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
+            children[0].bakeCurrentTransformIntoVertices();
+
+            this.masterMeshes.set(key, children[0]);
+        
+        } else if (children.length > 1) {
+            // Caso complexo: vários sub-meshes → merge
+            const merged = B.Mesh.MergeMeshes(
+                children.filter(m => m instanceof B.Mesh) as B.Mesh[],
+                true,   // disposeSource
+                true,   // allow32BitsIndices
+                undefined,
+                false,  // subdivideWithSubMeshes
+                true    // multiMultiMaterials (preserva materiais do .glb)
+            );
+        
+            if (merged) {
+                merged.setEnabled(false);
+                merged.parent = null; // desvincula do __root__
+                
+                if (scaleFactor) {
+                    merged.scaling = new B.Vector3(scaleFactor, scaleFactor, scaleFactor);
+                }
+                merged.bakeCurrentTransformIntoVertices();
+
+                this.masterMeshes.set(key, merged);
+            }
+
+        }
+
+        root.dispose(); // Limpa o nó __root__ agora desnecessário
+    }
+
 
 
     // Retorna o mesh mestre diretamente (para casos especiais)

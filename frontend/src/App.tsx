@@ -152,7 +152,6 @@ function App() {
 
   const handleSimulationEnd = (status: SimulationStatus, message?: string, steps?: number) => {
     setIsSimulating(false);
-    console.log(steps)
     setStepCount(steps ?? 0);
     
     if (status === SimulationStatus.SUCCESS || status === SimulationStatus.ERROR || status === SimulationStatus.END) {
@@ -239,7 +238,7 @@ function App() {
                               <span className="overlay-icon">🎯</span>
                               <h2>Objetivo Alcançado!</h2>
                               <p>O rover chegou ao destino com sucesso.</p>
-                              <p>Forma nescessários <strong>{stepCount}</strong> passos.</p>
+                              <p>Foram nescessários <strong>{stepCount}</strong> passos.</p>
                           </>
                       )}
                       {simulationResult === SimulationStatus.ERROR && (
