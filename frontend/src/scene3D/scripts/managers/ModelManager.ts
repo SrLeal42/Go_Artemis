@@ -23,8 +23,8 @@ class ModelManager {
         // this.registerTerrainPlane("terrain_transponivel",  "terrain_transponivel");
         // this.registerTerrainPlane("terrain_rocha",         "terrain_rocha");
         // this.registerTerrainPlane("terrain_cratera",       "terrain_cratera");
-        this.registerTerrainPlane("terrain_objetivo",      "terrain_objetivo");
-        this.registerTerrainPlane("terrain_surgimento",    "terrain_surgimento");
+        // this.registerTerrainPlane("terrain_objetivo",      "terrain_objetivo");
+        // this.registerTerrainPlane("terrain_surgimento",    "terrain_surgimento");
         // Montanha
         this.registerTerrainPlane("terrain_montanha_norte",    "terrain_montanha_norte");
         this.registerTerrainPlane("terrain_montanha_oeste",    "terrain_montanha_oeste");
@@ -71,10 +71,11 @@ class ModelManager {
         await Promise.all([
             this.loadModel("terrain_default",        "/models/terrain/TRANSPONIVEL.glb", .5),
             this.loadModel("terrain_transponivel",   "/models/terrain/TRANSPONIVEL.glb", .5),
-            this.loadModel("terrain_cratera",   "/models/terrain/CRATERA.glb", .5),
-            this.loadModel("terrain_rocha",   "/models/terrain/ROCHA.glb", .5),
-            this.loadModel("terrain_objetivo",   "/models/terrain/OBJETIVO.glb", .5),
-            this.loadModel("marcador",   "/models/others/MARCADOR.glb", 2),
+            this.loadModel("terrain_cratera",        "/models/terrain/CRATERA.glb", .5, new B.Vector3(0, 0, 0)),
+            this.loadModel("terrain_rocha",          "/models/terrain/ROCHA.glb", .5),
+            this.loadModel("terrain_objetivo",       "/models/terrain/OBJETIVO.glb", .5),
+            this.loadModel("terrain_surgimento",     "/models/terrain/SURGIMENTO.glb", 1),
+            this.loadModel("marcador",               "/models/others/MARCADOR.glb", 2),
         ]);
 
     }
@@ -115,7 +116,8 @@ class ModelManager {
     private async loadModel(
         key: string,
         path: string,
-        scaleFactor?: number
+        scaleFactor?: number,
+        rotateFactor?: B.Vector3
     ): Promise<void> {
 
         const result = await B.SceneLoader.ImportMeshAsync(
@@ -133,42 +135,76 @@ class ModelManager {
         // Se o modelo tiver sub-meshes, merge tudo em um único Mesh
         // para poder usar createInstance() depois
         const children = root.getChildMeshes(false) as B.Mesh[];
-
-        if (children.length === 1 && children[0] instanceof B.Mesh) {
-            // Caso simples: modelo com um único mesh
-            children[0].parent = null;
-            children[0].setEnabled(false);
-            
-            if (scaleFactor) {
-                children[0].scaling = new B.Vector3(scaleFactor, scaleFactor, scaleFactor);
-            }
-            children[0].bakeCurrentTransformIntoVertices();
-
-            this.masterMeshes.set(key, children[0]);
         
-        } else if (children.length > 1) {
-            // Caso complexo: vários sub-meshes → merge
+        // Normaliza InstancedMeshes → Mesh regulares
+        const meshesForMerge: B.Mesh[] = [];
+
+        for (const child of children) {
+            const isInstance = child instanceof B.InstancedMesh;
+            if (!isInstance && !(child instanceof B.Mesh)) continue;
+            
+            // Resolve o mesh: clone do source se instância, ou o próprio child
+            const mesh = isInstance
+                ? (child as B.InstancedMesh).sourceMesh.clone(`${child.name}_converted`, null)!
+                : child as B.Mesh;
+            
+            // Captura a transform completa (incluindo parents)
+            const world = child.computeWorldMatrix(true);
+            const pos = new B.Vector3();
+            const rot = new B.Quaternion();
+            const scl = new B.Vector3();
+            world.decompose(scl, rot, pos);
+            mesh.parent = null;
+            mesh.position = pos;
+            mesh.rotationQuaternion = rot;
+            mesh.scaling = scl;
+
+            if (isInstance) child.dispose();
+
+            meshesForMerge.push(mesh);
+        }
+
+        if (meshesForMerge.length === 1) {
+            const single = meshesForMerge[0];
+            single.setEnabled(false);
+        
+            if (scaleFactor) {
+                single.scaling = new B.Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
+        
+            if (rotateFactor) {
+                single.rotationQuaternion = null; // força usar euler
+                single.rotation = rotateFactor;
+            }
+            single.bakeCurrentTransformIntoVertices();
+        
+            this.masterMeshes.set(key, single);
+        
+        } else if (meshesForMerge.length > 1) {
+        
             const merged = B.Mesh.MergeMeshes(
-                children.filter(m => m instanceof B.Mesh) as B.Mesh[],
-                true,   // disposeSource
-                true,   // allow32BitsIndices
+                meshesForMerge,
+                true,
+                true,
                 undefined,
-                false,  // subdivideWithSubMeshes
-                true    // multiMultiMaterials (preserva materiais do .glb)
+                false,
+                true
             );
         
             if (merged) {
+                merged.parent = null;
                 merged.setEnabled(false);
-                merged.parent = null; // desvincula do __root__
-                
                 if (scaleFactor) {
                     merged.scaling = new B.Vector3(scaleFactor, scaleFactor, scaleFactor);
                 }
+         
+                if (rotateFactor) {
+                    merged.rotationQuaternion = null;
+                    merged.rotation = rotateFactor;
+                }
                 merged.bakeCurrentTransformIntoVertices();
-
                 this.masterMeshes.set(key, merged);
             }
-
         }
 
         root.dispose(); // Limpa o nó __root__ agora desnecessário

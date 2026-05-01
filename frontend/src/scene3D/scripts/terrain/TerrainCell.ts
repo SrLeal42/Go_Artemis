@@ -22,7 +22,7 @@ export class TerrainCell {
 
     public modelKey: string | null;
     public static cellSize = 5;
-    public meshSize = TerrainCell.cellSize //* .95;//* .5;
+    public meshSize = TerrainCell.cellSize * .98;//* .5;
     public mesh!: B.AbstractMesh | null;
     public meshNode!: B.TransformNode | null;
 
