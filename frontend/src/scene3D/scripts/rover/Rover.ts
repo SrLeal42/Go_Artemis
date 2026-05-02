@@ -16,7 +16,7 @@ export class Rover {
 
     public pivot : B.TransformNode;
     
-    public roverSize = 1;
+    public roverSize = .1;
     public roverMesh? : B.InstancedMesh;
 
     public facingDirection: RoverWorldDirection = RoverWorldDirection.NORTH;
@@ -54,20 +54,14 @@ export class Rover {
 
         const pivot = new B.TransformNode(`Pivot_Rover`, this.scene);
 
-        const rover = ModelInstance.createInstance("rover_body", "Rover");
-
-        // Uma caixa placeholder apenas para poder ver onde esta a frente do Rover
-        const frenteRover = ModelInstance.createInstance("rover_frente", "Rover_frente")
-
-        frenteRover.position.z = -1;
-        frenteRover.parent = rover;
+        const rover = ModelInstance.createInstance("rover", "Rover");
 
         rover.parent = pivot;
         
         this.pivot = pivot;
         this.roverMesh = rover;
 
-        this.pivot.position.y = this.roverSize / 2; 
+        this.pivot.position.y += .63//this.roverSize / 2; 
         // this.meshNode.rotation = new B.Vector3((Math.PI/2), 0, 0);
         this.pivot.scaling = new B.Vector3(this.roverSize, this.roverSize, this.roverSize);
         this.setGridPosition(this.gridX, this.gridZ); 
