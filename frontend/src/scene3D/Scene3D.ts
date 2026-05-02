@@ -63,6 +63,12 @@ export class Scene3D {
     const light = new B.HemisphericLight("light", new B.Vector3(0, 1, 0), scene);
     light.intensity = 0.8;
 
+    // GlowLayer para bloom automático em materiais emissivos
+    const glowLayer = new B.GlowLayer("glowLayer", scene, {
+        blurKernelSize: 32,
+    });
+    glowLayer.intensity = 0.8;
+
     MaterialInstance.initialize(scene);
     await ModelInstance.initialize(scene);
 

@@ -25,6 +25,7 @@ export class TerrainCell {
     public meshSize = TerrainCell.cellSize * .98;//* .5;
     public mesh!: B.AbstractMesh | null;
     public meshNode!: B.TransformNode | null;
+    public glowMesh!: B.AbstractMesh | null; // Para os modelos com luz piscando
 
     constructor(
         scene: B.Scene,
@@ -53,12 +54,26 @@ export class TerrainCell {
 
         const instance = ModelInstance.createInstance(key, `cell_${this.x}_${this.z}`);
 
+
         instance.scaling = new B.Vector3(this.meshSize, this.meshSize, this.meshSize);
         instance.position = new B.Vector3(
             this.x * TerrainCell.cellSize,
             this.y * TerrainCell.cellSize,
             this.z * TerrainCell.cellSize
         );
+
+        if (this.modelKey === 'terrain_surgimento') {
+            // Carregando o modelo auxiliar para o surgimento
+            const glow = ModelInstance.createInstance('terrain_surgimento_glow', `cell_glow_${this.x}_${this.z}`);
+            glow.scaling = new B.Vector3(this.meshSize, this.meshSize, this.meshSize);
+            glow.position = new B.Vector3(
+                this.x * TerrainCell.cellSize,
+                this.y * TerrainCell.cellSize,
+                this.z * TerrainCell.cellSize
+            );
+            this.glowMesh = glow;
+        }
+
 
         this.mesh = instance;
         
@@ -114,6 +129,11 @@ export class TerrainCell {
         if(this.mesh){
             this.mesh.dispose();
             this.mesh = null;
+        }
+
+        if (this.glowMesh) {
+            this.glowMesh.dispose();
+            this.glowMesh = null;
         }
 
     }

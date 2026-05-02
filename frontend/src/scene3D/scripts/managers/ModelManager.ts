@@ -74,7 +74,8 @@ class ModelManager {
             this.loadModel("terrain_cratera",        "/models/terrain/CRATERA.glb", .5, new B.Vector3(0, 0, 0)),
             this.loadModel("terrain_rocha",          "/models/terrain/ROCHA.glb", .5),
             this.loadModel("terrain_objetivo",       "/models/terrain/OBJETIVO.glb", .5),
-            this.loadModel("terrain_surgimento",     "/models/terrain/SURGIMENTO.glb", 1),
+            this.loadModel("terrain_surgimento",      "/models/terrain/SURGIMENTO_BASE.glb", 1),
+            this.loadModel("terrain_surgimento_glow", "/models/terrain/SURGIMENTO_BULBO.glb", 1),
             // MONTANHA
             this.loadModel("terrain_montanha_norte",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, 0, 0)),
             this.loadModel("terrain_montanha_oeste",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
