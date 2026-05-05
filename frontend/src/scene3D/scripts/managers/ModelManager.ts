@@ -3,10 +3,14 @@ import '@babylonjs/loaders/glTF';
 
 import { MaterialInstance } from './MaterialManager';
 
+import { SPAWN_LIGHT, GOAL_LIGHT } from '../utilities/LightingConstants';
+
 class ModelManager {
 
     private scene: B.Scene;
     private masterMeshes: Map<string, B.Mesh> = new Map();
+
+    private modelPositions: Map<string, B.Vector3[]> = new Map();
 
     public async initialize(scene: B.Scene): Promise<void> {
 
@@ -73,9 +77,10 @@ class ModelManager {
             this.loadModel("terrain_transponivel",   "/models/terrain/TRANSPONIVEL.glb", .5),
             this.loadModel("terrain_cratera",        "/models/terrain/CRATERA.glb", .5, new B.Vector3(0, 0, 0)),
             this.loadModel("terrain_rocha",          "/models/terrain/ROCHA.glb", .5),
-            this.loadModel("terrain_objetivo",       "/models/terrain/OBJETIVO.glb", .5),
-            this.loadModel("terrain_surgimento",      "/models/terrain/SURGIMENTO_BASE.glb", 1),
-            this.loadModel("terrain_surgimento_glow", "/models/terrain/SURGIMENTO_BULBO.glb", 1),
+            this.loadModel("terrain_objetivo",       "/models/terrain/OBJETIVO_BASE.glb", .5),
+            this.loadModel("terrain_objetivo_glow",  "/models/terrain/OBJETIVO_BULBO.glb", .5, new B.Vector3(0, 0, 0)),
+            this.loadModel("terrain_surgimento",     "/models/terrain/SURGIMENTO_BASE.glb", 1),
+            this.loadModel("terrain_surgimento_glow","/models/terrain/SURGIMENTO_BULBO.glb", 1),
             // MONTANHA
             this.loadModel("terrain_montanha_norte",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, 0, 0)),
             this.loadModel("terrain_montanha_oeste",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
@@ -177,6 +182,11 @@ class ModelManager {
             meshesForMerge.push(mesh);
         }
 
+        if (key === SPAWN_LIGHT.GLOW_KEY || key === GOAL_LIGHT.GLOW_KEY) { // Capturando a posição dos bulbos para poder criar os pointLights depois
+            const positions = meshesForMerge.map(m => m.position.clone());
+            this.modelPositions.set(key, positions);
+        }
+
         if (meshesForMerge.length === 1) {
             const single = meshesForMerge[0];
             single.setEnabled(false);
@@ -190,7 +200,7 @@ class ModelManager {
                 single.rotation = rotateFactor;
             }
             single.bakeCurrentTransformIntoVertices();
-        
+            single.refreshBoundingInfo();
             this.masterMeshes.set(key, single);
         
         } else if (meshesForMerge.length > 1) {
@@ -216,6 +226,7 @@ class ModelManager {
                     merged.rotation = rotateFactor;
                 }
                 merged.bakeCurrentTransformIntoVertices();
+                merged.refreshBoundingInfo();
                 this.masterMeshes.set(key, merged);
             }
         }
@@ -223,6 +234,10 @@ class ModelManager {
         root.dispose(); // Limpa o nó __root__ agora desnecessário
     }
 
+
+    public getModelPositions(key: string): B.Vector3[] {
+        return this.modelPositions.get(key) ?? [];
+    }
 
 
     // Retorna o mesh mestre diretamente (para casos especiais)

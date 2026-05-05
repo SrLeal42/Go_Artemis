@@ -1,5 +1,7 @@
 import * as B from '@babylonjs/core';
 
+import { ALL_BLINKING_LIGHTS } from '../utilities/LightingConstants';
+
 class MaterialManager {
 
     private scene: B.Scene;
@@ -46,6 +48,14 @@ class MaterialManager {
         this.registerEmissive("rover_frente", new B.Color3(0.1, 0.1, 0.1));
         // Marcador
         this.registerEmissive("marcador", new B.Color3(1, 0, 0));
+
+        for (const config of ALL_BLINKING_LIGHTS) {
+            const mat = new B.StandardMaterial(`mat_${config.GLOW_KEY}`, this.scene);
+            mat.disableLighting = true;
+            mat.emissiveColor = config.COLOR;
+            this.materials.set(config.GLOW_KEY, mat);
+        }
+    
     }
 
 

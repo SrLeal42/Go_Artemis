@@ -2,6 +2,9 @@ import * as B from '@babylonjs/core';
 
 import { ModelInstance } from '../managers/ModelManager';
 
+import { ALL_BLINKING_LIGHTS, type BlinkingLightConfig } from '../utilities/LightingConstants';
+
+
 export class TerrainCell {
 
     public scene : B.Scene;
@@ -25,7 +28,10 @@ export class TerrainCell {
     public meshSize = TerrainCell.cellSize * .98;//* .5;
     public mesh!: B.AbstractMesh | null;
     public meshNode!: B.TransformNode | null;
-    public glowMesh!: B.AbstractMesh | null; // Para os modelos com luz piscando
+    
+    // Para os modelos com luz piscando
+    public glowMesh!: B.AbstractMesh | null; 
+    public glowLights: B.PointLight[] = [];
 
     constructor(
         scene: B.Scene,
@@ -62,22 +68,52 @@ export class TerrainCell {
             this.z * TerrainCell.cellSize
         );
 
-        if (this.modelKey === 'terrain_surgimento') {
-            // Carregando o modelo auxiliar para o surgimento
-            const glow = ModelInstance.createInstance('terrain_surgimento_glow', `cell_glow_${this.x}_${this.z}`);
-            glow.scaling = new B.Vector3(this.meshSize, this.meshSize, this.meshSize);
-            glow.position = new B.Vector3(
-                this.x * TerrainCell.cellSize,
-                this.y * TerrainCell.cellSize,
-                this.z * TerrainCell.cellSize
-            );
-            this.glowMesh = glow;
+        for (const lightConfig of ALL_BLINKING_LIGHTS) {
+            if (this.modelKey === lightConfig.MODEL_KEY) {
+                this.setupGlowLights(lightConfig);
+                break;
+            }
         }
-
 
         this.mesh = instance;
         
     }
+
+
+    private setupGlowLights(config: BlinkingLightConfig): void {
+        
+        const glow = ModelInstance.createInstance(config.GLOW_KEY, `cell_glow_${this.x}_${this.z}`);
+        glow.scaling = new B.Vector3(this.meshSize, this.meshSize, this.meshSize);
+        glow.position = new B.Vector3(
+            this.x * TerrainCell.cellSize,
+            this.y * TerrainCell.cellSize,
+            this.z * TerrainCell.cellSize
+        );
+        this.glowMesh = glow;
+
+        const lampPositions = ModelInstance.getModelPositions(config.GLOW_KEY);
+        const cellOrigin = new B.Vector3(
+            this.x * TerrainCell.cellSize,
+            this.y * TerrainCell.cellSize,
+            this.z * TerrainCell.cellSize
+        );
+
+        for (let i = 0; i < lampPositions.length; i++) {
+            const light = new B.PointLight(
+                `light_${config.MODEL_KEY}_${this.x}_${this.z}_${i}`,
+                cellOrigin.add(lampPositions[i].scale(this.meshSize)),
+                this.scene
+            );
+            light.intensity = config.POINT_INITIAL_INTENSITY;
+            light.diffuse = config.COLOR.clone();
+            light.range = config.POINT_RANGE;
+            this.glowLights.push(light);
+        }
+
+
+    }
+
+
 
 
     public mark(): void {
@@ -135,6 +171,12 @@ export class TerrainCell {
             this.glowMesh.dispose();
             this.glowMesh = null;
         }
+
+        for (const light of this.glowLights) {
+            light.dispose();
+        }
+        this.glowLights = [];
+
 
     }
 

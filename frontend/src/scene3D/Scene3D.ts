@@ -11,6 +11,8 @@ import { ModelInstance } from './scripts/managers/ModelManager';
 import { TerrainTypes, TileTraversal } from './scripts/terrain/TerrainTypes';
 import { RoverRelativeDirection, RoverWorldDirection } from './scripts/rover/RoverDirection';
 
+import { ALL_BLINKING_LIGHTS, SPAWN_LIGHT, GLOW_LAYER, SCENE_LIGHTING } from './scripts/utilities/LightingConstants';
+
 export class Scene3D {
 
   public canvas : HTMLCanvasElement
@@ -40,6 +42,53 @@ export class Scene3D {
     const scene = await this.createScene();
     this.scene = scene;
 
+    const glowMats: Map<string, B.StandardMaterial> = new Map();
+    for (const config of ALL_BLINKING_LIGHTS) {
+        const master = ModelInstance.getMasterMesh(config.GLOW_KEY);
+        const mat = MaterialInstance.getMaterial(config.GLOW_KEY) as B.StandardMaterial;
+        master.material = mat;
+        glowMats.set(config.GLOW_KEY, mat);
+    }
+
+    // Aumentando o limite de luzes simultaneas na cena;
+    scene.materials.forEach(mat => {
+        if (mat instanceof B.StandardMaterial || mat instanceof B.PBRMaterial) {
+            mat.maxSimultaneousLights = SCENE_LIGHTING.MAX_SIMULTANEOUS_LIGHTS;
+        }
+    });
+
+    scene.registerBeforeRender(() => {
+    
+      for (const config of ALL_BLINKING_LIGHTS) {
+        const t = (Math.sin(performance.now() * config.BLINK_SPEED) + 1) / 2;
+        
+        const mat = glowMats.get(config.GLOW_KEY)!;
+        const intensity = t * config.EMISSIVE_MAX + config.EMISSIVE_MIN;
+        mat.emissiveColor = new B.Color3(
+            intensity * config.COLOR.r,
+            intensity * config.COLOR.g,
+            intensity * config.COLOR.b,
+        );
+        
+        // Busca a célula correspondente
+        const pos = config === SPAWN_LIGHT
+            ? this.terrain.spawnPosition
+            : this.terrain.goalPosition;
+    
+        const cell = this.terrain.terrainGrid.get(`${pos.x},0,${pos.z}`);
+    
+        if (cell?.glowLights) {
+            for (const light of cell.glowLights) {
+                light.intensity = t * config.POINT_INTENSITY_MAX + config.POINT_INTENSITY_MIN;
+            }
+        }
+    
+      }
+    
+    
+    });
+
+
     if (this.canvas.parentElement) {
       this.resizeObserver = new ResizeObserver(() => {
           this.engine.resize();
@@ -61,13 +110,13 @@ export class Scene3D {
     scene.clearColor = new B.Color4(0.06, 0.09, 0.16, 1);
 
     const light = new B.HemisphericLight("light", new B.Vector3(0, 1, 0), scene);
-    light.intensity = 0.8;
+    light.intensity = SCENE_LIGHTING.HEMISPHERIC_INTENSITY;
 
     // GlowLayer para bloom automático em materiais emissivos
     const glowLayer = new B.GlowLayer("glowLayer", scene, {
-        blurKernelSize: 32,
+        blurKernelSize: GLOW_LAYER.BLUR_KERNEL_SIZE,
     });
-    glowLayer.intensity = 0.8;
+    glowLayer.intensity = GLOW_LAYER.INTENSITY;
 
     MaterialInstance.initialize(scene);
     await ModelInstance.initialize(scene);

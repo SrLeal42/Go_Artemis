@@ -22,6 +22,7 @@ export class Goal {
         this.mesh.position.x = gridX * TerrainCell.cellSize;
         this.mesh.position.z = gridZ * TerrainCell.cellSize;
         this.mesh.position.y = 1;
+        this.mesh.isVisible = false;
     }
 
     public isAtPosition(x: number, z: number): boolean {
