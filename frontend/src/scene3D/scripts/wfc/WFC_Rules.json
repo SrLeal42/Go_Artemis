@@ -2,7 +2,7 @@
   "tiles": [
     {
       "id": "TRANSPONIVEL",
-      "weight": 10,
+      "weight": 15,
       "traversal": "passable",
       "modelKey": "terrain_transponivel",
       "adjacency": {

@@ -40,15 +40,15 @@ class ModelManager {
         // this.registerTerrainPlane("terrain_montanha_sudoeste",    "terrain_montanha_sudoeste");
         // this.registerTerrainPlane("terrain_montanha_centro",    "terrain_montanha_centro");
         // Cratera Grande
-        this.registerTerrainPlane("terrain_cratera_norte",    "terrain_cratera_norte");
-        this.registerTerrainPlane("terrain_cratera_oeste",    "terrain_cratera_oeste");
-        this.registerTerrainPlane("terrain_cratera_leste",    "terrain_cratera_leste");
-        this.registerTerrainPlane("terrain_cratera_sul",    "terrain_cratera_sul");
-        this.registerTerrainPlane("terrain_cratera_noroeste",    "terrain_cratera_noroeste");
-        this.registerTerrainPlane("terrain_cratera_nordeste",    "terrain_cratera_nordeste");
-        this.registerTerrainPlane("terrain_cratera_sudeste",    "terrain_cratera_sudeste");
-        this.registerTerrainPlane("terrain_cratera_sudoeste",    "terrain_cratera_sudoeste");
-        this.registerTerrainPlane("terrain_cratera_centro",    "terrain_cratera_centro");
+        // this.registerTerrainPlane("terrain_cratera_norte",    "terrain_cratera_norte");
+        // this.registerTerrainPlane("terrain_cratera_oeste",    "terrain_cratera_oeste");
+        // this.registerTerrainPlane("terrain_cratera_leste",    "terrain_cratera_leste");
+        // this.registerTerrainPlane("terrain_cratera_sul",    "terrain_cratera_sul");
+        // this.registerTerrainPlane("terrain_cratera_noroeste",    "terrain_cratera_noroeste");
+        // this.registerTerrainPlane("terrain_cratera_nordeste",    "terrain_cratera_nordeste");
+        // this.registerTerrainPlane("terrain_cratera_sudeste",    "terrain_cratera_sudeste");
+        // this.registerTerrainPlane("terrain_cratera_sudoeste",    "terrain_cratera_sudoeste");
+        // this.registerTerrainPlane("terrain_cratera_centro",    "terrain_cratera_centro");
 
         const masterObjetivoCube = B.MeshBuilder.CreateBox("master_objetivo_cubo", {}, this.scene);
         masterObjetivoCube.material = MaterialInstance.getMaterial("objetivo_cubo");
@@ -91,6 +91,16 @@ class ModelManager {
             this.loadModel("terrain_montanha_sudeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, Math.PI, 0)),
             this.loadModel("terrain_montanha_sudoeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
             this.loadModel("terrain_montanha_centro",  "/models/terrain/montanha/MONTANHA_CENTRO.glb", .5, new B.Vector3(0, 0, 0)),
+            // CRATERA GRANDE
+            this.loadModel("terrain_cratera_norte",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, 0, 0)),
+            this.loadModel("terrain_cratera_oeste",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
+            this.loadModel("terrain_cratera_leste",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
+            this.loadModel("terrain_cratera_sul",    "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, Math.PI, 0)),
+            this.loadModel("terrain_cratera_noroeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, 0, 0)),
+            this.loadModel("terrain_cratera_nordeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
+            this.loadModel("terrain_cratera_sudeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, Math.PI, 0)),
+            this.loadModel("terrain_cratera_sudoeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
+            this.loadModel("terrain_cratera_centro",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CENTRO.glb", .5, new B.Vector3(0, 0, 0)),
             // OUTROS
             this.loadModel("marcador",               "/models/others/MARCADOR.glb", 2),
             this.loadModel("rover",                  "/models/rover/ROVER.glb", 1),
@@ -122,13 +132,13 @@ class ModelManager {
     }
 
 
-    private registerTerrainPlane(key: string, materialKey: string): void {
-        const mesh = B.MeshBuilder.CreatePlane(`master_${key}`, {}, this.scene);
-        mesh.material = MaterialInstance.getMaterial(materialKey);
-        mesh.rotation = new B.Vector3(Math.PI / 2, 0, 0);
-        mesh.setEnabled(false);
-        this.masterMeshes.set(key, mesh);
-    }
+    // private registerTerrainPlane(key: string, materialKey: string): void {
+    //     const mesh = B.MeshBuilder.CreatePlane(`master_${key}`, {}, this.scene);
+    //     mesh.material = MaterialInstance.getMaterial(materialKey);
+    //     mesh.rotation = new B.Vector3(Math.PI / 2, 0, 0);
+    //     mesh.setEnabled(false);
+    //     this.masterMeshes.set(key, mesh);
+    // }
 
 
     private async loadModel(
