@@ -1,0 +1,27 @@
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%; /* Agora ocupa 100% do #root */
+}
+
+/* O Layout LeetCode: Editor esquerda, 3D direita */
+.editor-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr; /* Esquerda fixa para código, direita gigante */
+  gap: 1.5rem;
+  flex: 1; /* Pega o resto da altura do container */
+  min-height: 0; /* Previne overflow no grid */
+}
+
+
+@media (max-width: 1024px) {
+  .editor-layout {
+     grid-template-columns: 1fr;
+     height: auto;
+  }
+}

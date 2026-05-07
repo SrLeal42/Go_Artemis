@@ -175,10 +175,10 @@ function App() {
 
   return (
     <div className="container">
-      <header className="header">
+      {/* <header className="header">
         <h1>🚀 Artemis Compiler</h1>
         <p>Desenvolva e compile comandos para o seu Rover em tempo real</p>
-      </header>
+      </header> */}
 
       <main className="editor-layout">
         
