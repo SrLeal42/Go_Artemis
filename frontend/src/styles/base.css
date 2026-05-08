@@ -32,3 +32,19 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto;    /* Permite rolar */
+    height: auto;        /* Não trava na viewport */
+  }
+
+  #root {
+    height: auto;
+  }
+
+  .container {
+    height: auto;
+  }
+}
+

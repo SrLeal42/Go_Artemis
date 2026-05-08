@@ -1,4 +1,3 @@
-
 /* Sessão Direita 3D */
 .scene-section {
   display: flex;
@@ -10,6 +9,7 @@
   height: 100%;
   min-height: 0;
 }
+
 
 .scene-header {
   padding: 1rem 1.5rem;
@@ -24,8 +24,37 @@
 
 .scene-wrapper {
   flex: 1;
-  width: 100%;
-  height: 100%;
-  position: relative;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  container-type: size;    /* Transforma o wrapper em um container de referência */
 }
 
+/* Container que efetivamente mantém a proporção 1:1 */
+.scene-canvas-container {
+  --side: min(100cqw, 100cqh);  /* O menor entre largura e altura do wrapper */
+  width: var(--side);
+  height: var(--side);
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #334155;
+}
+
+
+@media (max-width: 768px) {
+  .scene-section {
+    height: auto;
+  }
+  .scene-wrapper {
+    container-type: normal;
+    flex: none;              /* Para de tentar preencher espaço */
+    display: block;          /* Remove o flex centering que causa overlap */
+  }
+  .scene-canvas-container {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+}

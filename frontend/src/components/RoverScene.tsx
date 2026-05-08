@@ -72,7 +72,7 @@ export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimula
   }, []);
 
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, borderRadius: '8px', overflow: 'hidden', border: '1px solid #334155' }}>
+    <div className="scene-canvas-container">
       <canvas 
         ref={canvasRef} 
         style={{ display: 'block', width: '100%', height: '100%', outline: 'none' }} 

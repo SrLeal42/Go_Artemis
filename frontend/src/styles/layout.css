@@ -1,7 +1,7 @@
 
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1300px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -19,9 +19,9 @@
 }
 
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .editor-layout {
-     grid-template-columns: 1fr;
-     height: auto;
+    grid-template-columns: 1fr;
+    height: auto;
   }
 }
