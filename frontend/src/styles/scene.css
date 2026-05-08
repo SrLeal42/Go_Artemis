@@ -29,6 +29,7 @@
   align-items: center;
   justify-content: center;
   container-type: size;    /* Transforma o wrapper em um container de referência */
+  position: relative;
 }
 
 /* Container que efetivamente mantém a proporção 1:1 */

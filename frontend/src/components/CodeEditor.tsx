@@ -1,9 +1,13 @@
 import { useEffect, useRef } from 'react';
+
 import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
 import { basicSetup } from 'codemirror';
 import { linter, type Diagnostic } from '@codemirror/lint';
-import { oneDark } from '@codemirror/theme-one-dark';
+// import { oneDark } from '@codemirror/theme-one-dark';
+
+import { artemisParser } from '../editor/ArtemisParser';
+import { artemisTheme, artemisHighlight } from '../editor/ArtemisTheme';
 
 interface CodeEditorProps {
     initialCode: string;
@@ -41,7 +45,9 @@ export function CodeEditor({ initialCode, onCodeChange }: CodeEditorProps) {
             doc: initialCode,
             extensions: [
                 basicSetup,
-                oneDark,
+                artemisParser,
+                artemisTheme,
+                artemisHighlight, 
                 compilerLinter,
                 // Listener que avisa o React toda vez que o texto muda
                 EditorView.updateListener.of((update) => {
