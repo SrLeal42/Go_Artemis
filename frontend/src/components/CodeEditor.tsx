@@ -12,6 +12,7 @@ import { artemisTheme, artemisHighlight } from '../editor/ArtemisTheme';
 interface CodeEditorProps {
     initialCode: string;
     onCodeChange: (code: string) => void;
+    isWasmReady?: boolean;
 }
 
 // O linter chama o compilador WASM e converte os erros para Diagnostics
@@ -34,7 +35,7 @@ const compilerLinter = linter((view) => {
     });
 });
 
-export function CodeEditor({ initialCode, onCodeChange }: CodeEditorProps) {
+export function CodeEditor({ initialCode, onCodeChange, isWasmReady }: CodeEditorProps) {
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
 
@@ -69,6 +70,19 @@ export function CodeEditor({ initialCode, onCodeChange }: CodeEditorProps) {
             view.destroy();
         };
     }, []); // Roda 1 vez — o CodeMirror gerencia o DOM internamente
+
+    // Dispara quando o WASM estiver pronto para fazer o re-parser das keywords do editor     
+    useEffect(() => {
+        if (isWasmReady && viewRef.current) {
+            const view = viewRef.current;
+            // Dispatch uma transação "vazia" que troca o doc por ele mesmo
+            // Isso força o re-parse completo do conteúdo
+            const doc = view.state.doc.toString();
+            view.dispatch({
+                changes: { from: 0, to: view.state.doc.length, insert: doc }
+            });
+        }
+    }, [isWasmReady]);
 
     return <div ref={editorRef} className="code-editor" />;
 }

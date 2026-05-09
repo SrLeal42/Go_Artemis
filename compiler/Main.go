@@ -6,6 +6,7 @@ import (
 	"go-artemis-compiler/lexer"
 	"go-artemis-compiler/models"
 	"go-artemis-compiler/parser"
+	"go-artemis-compiler/token"
 	"syscall/js" // <-- Import importantíssimo para integrar com o Front-end
 )
 
@@ -17,6 +18,7 @@ func main() {
 	// que irá apontar para a nossa função compileWrapper em Go.
 	// O seu React chamará ela usando: map ou window.artemisCompile("codigo...")
 	js.Global().Set("artemisCompile", js.FuncOf(compileWrapper))
+	js.Global().Set("artemisKeywords", js.FuncOf(keywordsWrapper))
 	fmt.Println("🚀 Compilador Artemis GO-WASM carregado e aguardando no navegador!")
 
 	// 3. Trava a execução indefinidamente
@@ -32,7 +34,7 @@ func compileWrapper(this js.Value, args []js.Value) any {
 	// Recupera o script digitado e transforma num tipo string primitivo do Go
 	script := args[0].String()
 
-	// Roda o seu compilador maravilhoso de forma isolada e limpa
+	// Roda o seu compilador de forma isolada e limpa
 	resultadoJson := Compile(script)
 	// Devolvemos o JSON para o Front-end
 	return resultadoJson
@@ -41,14 +43,6 @@ func compileWrapper(this js.Value, args []js.Value) any {
 func Compile(script string) string {
 
 	compileLexer := lexer.New(script)
-
-	// for {
-	// 	t := compileLexer.NextToken()
-	// 	fmt.Printf("Token gerado: %+v\n", t)
-	// 	if t.Type == token.EOF {
-	// 		break
-	// 	}
-	// }
 
 	compileParser := parser.New(compileLexer)
 	compileComands := compileParser.ParseProgram()
@@ -61,11 +55,15 @@ func Compile(script string) string {
 		Error:   compileErrors,
 	}
 
-	// resultado := models.CompilerResult{
-	// 	Success: true,
-	// 	Comands: []models.CommandNode{},
-	// }
+	jsonBytes, _ := json.MarshalIndent(resultado, "", "  ") // MarshalIndent deixa o JSON mais legível!
+	return string(jsonBytes)
+}
 
-	jsonBytes, _ := json.MarshalIndent(resultado, "", "  ") // MarshalIndent deixa o JSON bonito e legível!
+// Função que retorna todas Keywords categorizadas
+func keywordsWrapper(this js.Value, args []js.Value) any {
+	kw := token.KeywordsCategorized
+
+	jsonBytes, _ := json.Marshal(kw)
+
 	return string(jsonBytes)
 }

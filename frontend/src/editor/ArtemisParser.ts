@@ -15,6 +15,18 @@ export const artemisTags = {
   invalid:    Tag.define(),   // caracteres inválidos
 };
 
+let keywords: Record<string, string[]> | null = null;
+
+function getKeywords(): Record<string, string[]> {
+
+  if (!keywords && typeof window.artemisKeywords === 'function') {
+    keywords = JSON.parse(window.artemisKeywords());
+  }
+
+  return keywords ?? {};
+}
+
+
 export const artemisParser = StreamLanguage.define({
   token(stream) {
     if (stream.eatSpace()) return null;
@@ -24,18 +36,12 @@ export const artemisParser = StreamLanguage.define({
 
     if (stream.match(/[a-zA-Z_]+/)) {
       const word = stream.current();
-
-      if (['IF', 'ELSE', 'REPEAT', 'ENQUANTO'].includes(word)) return 'control';
       
-      if (word === 'FUNCAO') return 'definition';
+      const kw = getKeywords();
       
-      if (['AVANCA', 'RECUA', 'GIRA', 'MARCAR'].includes(word)) return 'command';
-      
-      if (['DETECTA', 'OBSTACULO', 'OBJETIVO', 'BORDA', 'LIVRE', 'MARCADO'].includes(word)) return 'sensor';
-      
-      if (word === 'NAO') return 'logic';
-      
-      if (['ESQUERDA', 'DIREITA', 'FRENTE'].includes(word)) return 'direction';
+      for (const [category, words] of Object.entries(kw)) {
+        if (words.includes(word)) return category;
+      }
       
       return 'identifier';
     }

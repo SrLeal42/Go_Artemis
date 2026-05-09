@@ -19,6 +19,7 @@ declare global {
   interface Window {
     Go: any;
     artemisCompile: (script: string) => string;
+    artemisKeywords: () => string;
   }
 }
 
@@ -207,7 +208,8 @@ function App() {
           </div>
           <CodeEditor 
               initialCode={code} 
-              onCodeChange={setCode} 
+              onCodeChange={setCode}
+              isWasmReady={isWasmLoaded}
           />
         </div>
 
