@@ -185,7 +185,7 @@ function App() {
         {/* COLUNA ESQUERDA: Sidebar (Estilo LeetCode) */}
         <div className="sidebar">
           <div className="editor-header">
-            <h2>💻 Fonte (Artemis Lang)</h2>
+            <h2>{'</>'}</h2>
             <div className="editor-actions">
               {isSimulating ? (
                   <button className="action-btn btn-stop" data-tooltip="Parar" onClick={handleStop}>
@@ -197,10 +197,10 @@ function App() {
                   </button>
               )}
               <button className="action-btn btn-reset" data-tooltip="Reiniciar" onClick={handleReset} disabled={isSimulating}>
-                  🔄
+                  ↻
               </button>
               <button className="action-btn btn-new-level" data-tooltip="Regerar Terreno" onClick={handleNewLevel} disabled={isSimulating}>
-                  🎲
+                  ⚄
               </button>
             </div>
 
@@ -215,7 +215,7 @@ function App() {
         <div className="scene-section">
           <div className="scene-header">
           
-            <h2>🗺️ Simulação Rover 3D</h2>
+            <h2>⊞</h2>
           
             <div className="camera-switch" onClick={handleCameraToggle}>
                 <span className={`switch-label ${isTopView ? 'active' : ''}`}>Top</span>
@@ -261,12 +261,12 @@ function App() {
                           <button className="overlay-btn btn-retry" onClick={() => {
                               handleReset();
                           }}>
-                              🔄 Reiniciar
+                              Reiniciar
                           </button>
                           <button className="overlay-btn btn-new" onClick={() => {
                               handleNewLevel();
                           }}>
-                              🎲 Novo Level
+                              Novo Level
                           </button>
 
                       </div>

@@ -42,7 +42,32 @@ export const artemisTheme = EditorView.theme({
 
   '.cm-scroller': {
     overflow: 'auto',
+    scrollbarWidth: 'thin',
+    scrollbarColor: '#334155 #020617',
   },
+  
+  '.cm-scroller::-webkit-scrollbar': {
+    width: '8px',
+    height: '8px',
+  },
+  
+  '.cm-scroller::-webkit-scrollbar-track': {
+    background: '#020617',
+  },
+  
+  '.cm-scroller::-webkit-scrollbar-thumb': {
+    background: '#334155',
+    borderRadius: '4px',
+  },
+  
+  '.cm-scroller::-webkit-scrollbar-thumb:hover': {
+    background: '#475569',
+  },
+  
+  '.cm-scroller::-webkit-scrollbar-corner': {
+    background: '#020617',
+  },
+
 }, { dark: true });
 
 export const artemisHighlight = syntaxHighlighting(

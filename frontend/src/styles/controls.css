@@ -10,10 +10,10 @@
 .switch-track {
     width: 44px;
     height: 24px;
-    background: #1e293b;
+    background: inherit/*#1e293b*/;
     border-radius: 12px;
     position: relative;
-    border: 1px solid #334155;
+    border: 2px solid #334155;
     transition: background 0.3s ease;
 }
 
@@ -23,22 +23,22 @@
     background: #60a5fa;
     border-radius: 50%;
     position: absolute;
-    top: 2px;
+    top: 1px;
     transition: left 0.3s ease;
 }
 
 .switch-thumb.left {
-    left: 3px;
+    left: 0px;
 }
 
 .switch-thumb.right {
-    left: 23px;
+    left: 22px;
 }
 
 .switch-label {
     font-size: 0.75rem;
     color: #64748b;
-    font-weight: 500;
+    font-weight: bold;
     transition: color 0.3s ease;
 }
 
@@ -140,6 +140,8 @@
 
 .btn-reset {
     color: #fbbf24;
+    border-color: #fbbf24;
+    font-size: 1.1rem; 
 }
 
 .btn-reset:hover {
@@ -149,6 +151,8 @@
 
 .btn-new-level {
     color: #34d399;
+    border-color: #34d399;
+    font-size: 1.3rem;
 }
 
 .btn-new-level:hover {

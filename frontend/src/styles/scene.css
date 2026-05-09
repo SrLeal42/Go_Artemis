@@ -12,6 +12,9 @@
 
 
 .scene-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 1rem 1.5rem;
   background: #0f172a;
   border-bottom: 1px solid #334155;
@@ -19,7 +22,9 @@
 
 .scene-header h2 {
   margin: 0;
-  font-size: 1rem;
+  color: #528acf;
+  font-weight: lighter;
+  font-size: 1.7rem;
 }
 
 .scene-wrapper {
