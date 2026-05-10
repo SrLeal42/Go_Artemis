@@ -240,7 +240,7 @@ function App() {
                       
                       {simulationResult === SimulationStatus.SUCCESS && (
                           <>
-                              <span className="overlay-icon">🎯</span>
+                              <span className="overlay-icon success">☾⌖☽</span>
                               <h2>Objetivo Alcançado!</h2>
                               <p>O rover chegou ao destino com sucesso.</p>
                               <p>Foram nescessários <strong>{stepCount}</strong> passos.</p>
@@ -248,7 +248,7 @@ function App() {
                       )}
                       {simulationResult === SimulationStatus.ERROR && (
                           <>
-                              <span className="overlay-icon">💥</span>
+                              <span className="overlay-icon error">⊘</span>
                               <h2>Simulação Falhou</h2>
                               <p>O rover deu <strong>{stepCount}</strong> passos antes de falhar.</p>
                               <p>{errorMessage || "O rover encontrou um problema durante a execução."}</p>
@@ -256,7 +256,7 @@ function App() {
                       )}
                       {simulationResult === SimulationStatus.END && (
                           <>
-                              <span className="overlay-icon">🏁</span>
+                              <span className="overlay-icon end">⊝</span>
                               <h2>Trajetória Incompleta</h2>
                               <p>Os comandos acabaram, mas o rover não chegou ao objetivo.</p>
                               <p>O rover deu <strong>{stepCount}</strong> passos.</p>

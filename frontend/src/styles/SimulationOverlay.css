@@ -25,8 +25,18 @@
 }
 
 .overlay-icon {
-    font-size: 3rem;
+    font-size: 4rem;
     animation: iconBounce 0.6s ease;
+}
+
+.overlay-icon.success {
+    color: #9cfd99;
+}
+.overlay-icon.error {
+    color: #ff5353;
+}
+.overlay-icon.end {
+    color: #77b4ff;
 }
 
 @keyframes iconBounce {
