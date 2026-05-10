@@ -1,0 +1,148 @@
+/* ========= Base do conteúdo das abas ========= */
+.help-content h3 {
+  margin: 0 0 0.8rem;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.help-content h4 {
+  margin: 1.2rem 0 0.5rem;
+  font-size: 1rem;
+  color: #c0c0c0;
+}
+
+.help-content ul {
+  padding-left: 1.2rem;
+  margin: 0.4rem 0 0.8rem;
+}
+
+.help-content li {
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  color: #aaa;
+  line-height: 1.5;
+}
+
+.hl {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+/* ========= Tutorial Steps ========= */
+.tutorial-step {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #528acf, #60a5fa);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tutorial-step p {
+  margin: 0.2rem 0 0;
+  font-size: 0.88rem;
+  color: #999;
+}
+
+/* ========= Code Blocks ========= */
+.code-block {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.82rem;
+  color: #c8d6e5;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.code-caption {
+  font-size: 0.8rem;
+  color: #777;
+  font-style: italic;
+  margin-top: 0.3rem;
+}
+
+kbd {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.85em;
+  font-family: inherit;
+  color: #ddd;
+}
+
+/* ========= Docs Table ========= */
+.docs-category {
+  margin-bottom: 1rem;
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.docs-table th {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  color: #888;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.docs-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #d6d6d6;
+  vertical-align: top;
+}
+
+.docs-table code {
+  background: rgba(137, 87, 229, 0.15);
+  color: #60a5fa;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.82em;
+  white-space: nowrap;
+}
+
+/* ========= GitHub Link ========= */
+.help-github-link {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+
+  background: linear-gradient(135deg, #528acf, #60a5fa);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.help-github-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(137, 87, 229, 0.4);
+}
+

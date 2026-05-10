@@ -1,8 +1,10 @@
 /* Importando fontes modernas da Google: Inter (UI) e Fira Code (Para o código) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap');
 
-@import './styles/base.css';
-@import './styles/layout.css';
-@import './styles/editor.css';
-@import './styles/scene.css';
-@import './styles/controls.css';
+@import './styles/Base.css';
+@import './styles/Layout.css';
+@import './styles/Editor.css';
+@import './styles/Scene.css';
+@import './styles/Controls.css';
+@import './styles/HelpModal.css';
+@import './styles/HelpContent.css';

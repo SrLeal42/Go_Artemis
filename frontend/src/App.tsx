@@ -4,6 +4,7 @@ import './styles/SimulationOverlay.css';
 
 import RoverScene from './components/RoverScene.tsx';
 import CodeEditor from './components/CodeEditor.tsx';
+import HelpModal from './components/HelpModal.tsx';
 
 import type { CompilerResult } from './engineAST/models/CompilerResultType.ts';
 import type { CommandNode } from './engineAST/models/CMDTypes.ts';
@@ -59,6 +60,8 @@ function App() {
 
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResult, setSimulationResult] = useState<SimulationStatus | null>(null);
+
+  const [isHelpOpen, setIsHelpOpen] = useState(true);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [stepCount, setStepCount] = useState<number>(0);
@@ -280,6 +283,17 @@ function App() {
         </div>
 
       </main>
+
+      
+      <button
+        className="help-fab"
+        onClick={() => setIsHelpOpen(true)}
+        aria-label="Sobre o projeto"
+      >
+        ⓘ
+      </button>
+
+      {isHelpOpen && <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />}
       
     </div>
   );
