@@ -257,7 +257,7 @@ export class WFCSolver {
     //  SOLVE — orquestra tudo
     // =============================================
 
-    public solve(maxRetries = 10): Map<string, { tileId: string; traversal: string; modelKey: string }> | null {
+    public solve(maxRetries = 20): Map<string, { tileId: string; traversal: string; modelKey: string }> | null {
 
         for (let attempt = 0; attempt < maxRetries; attempt++) {
 
@@ -286,6 +286,11 @@ export class WFCSolver {
 
             if (success) {
                 
+                if (!this.hasPath()) {
+                    console.warn(`WFC: Tentativa ${attempt + 1} sem caminho válido, reiniciando...`);
+                    continue; // Tenta de novo
+                }
+
                 // Monta o resultado final: "x,z" → tileId
                 const result = new Map<string, { tileId: string; traversal: string; modelKey: string }>();
                 for (const [key, cell] of this.grid) {
@@ -301,4 +306,56 @@ export class WFCSolver {
         console.error(`WFC: Falhou após ${maxRetries} tentativas`);
         return null;
     }
+
+    private hasPath(): boolean {
+        // Encontra spawn e goal no grid colapsado
+        let spawn: string | null = null;
+        let goal: string | null = null;
+
+        for (const [key, cell] of this.grid) {
+            if (cell.chosenTile === "SURGIMENTO") spawn = key;
+            if (cell.chosenTile === "OBJETIVO")   goal = key;
+        }
+
+        if (!spawn || !goal) return false;
+
+        // BFS clássico, só anda em células "passable"
+        const visited = new Set<string>();
+        const queue = [spawn];
+        visited.add(spawn);
+
+        while (queue.length > 0) {
+            const current = queue.shift()!;
+
+            if (current === goal) return true;
+
+            const cell = this.grid.get(current)!;
+            
+            for (const dir of ALL_DIRECTIONS) {
+                const [dx, dz] = DIR_OFFSETS[dir];
+                const neighborKey = `${cell.x + dx},${cell.z + dz}`;
+
+                if (visited.has(neighborKey)) continue;
+
+                const neighbor = this.grid.get(neighborKey);
+                if (!neighbor) continue;
+
+                // Só expande se o traversal for passable
+                if (neighbor.traversal === "passable") {
+                    visited.add(neighborKey);
+                    queue.push(neighborKey);
+                }
+
+            }
+
+        }
+
+
+        return false;
+    }
+
+
+
+
+
 }
