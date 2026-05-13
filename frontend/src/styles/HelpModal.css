@@ -50,7 +50,7 @@
 /* ========= Modal ========= */
 .help-modal {
   position: relative;
-  max-width: 640px;
+  max-width: 780px;
   width: 90%;
   padding: 2.7rem 2.7rem 2.5rem;
   border-radius: 16px;

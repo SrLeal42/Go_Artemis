@@ -95,6 +95,7 @@ kbd {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.82rem;
+  table-layout: fixed;
 }
 
 .docs-table th {
@@ -124,6 +125,25 @@ kbd {
   font-size: 0.82em;
   white-space: nowrap;
 }
+
+.docs-table th:nth-child(1),
+.docs-table td:nth-child(1) {
+  text-align: left;
+  width: 20%;
+}
+/* Coluna 2 – Sintaxe: centralizada */
+.docs-table th:nth-child(2),
+.docs-table td:nth-child(2) {
+  text-align: center;
+  width: 35%;
+}
+/* Coluna 3 – Descrição: alinhada à direita */
+.docs-table th:nth-child(3),
+.docs-table td:nth-child(3) {
+  text-align: right;
+  width: 45%;
+}
+
 
 /* ========= GitHub Link ========= */
 .help-github-link {
