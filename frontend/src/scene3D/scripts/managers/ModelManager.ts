@@ -12,6 +12,8 @@ class ModelManager {
 
     private modelPositions: Map<string, B.Vector3[]> = new Map();
 
+    public onProgress?: (loaded: number, total: number) => void;
+
     public async initialize(scene: B.Scene): Promise<void> {
 
         this.scene = scene;
@@ -22,89 +24,60 @@ class ModelManager {
 
     // Registra todos os modelos mestres aqui
     private async initializeModels(): Promise<void> {
-        
-        // this.registerTerrainPlane("terrain_default",       "terrain_transponivel");
-        // this.registerTerrainPlane("terrain_transponivel",  "terrain_transponivel");
-        // this.registerTerrainPlane("terrain_rocha",         "terrain_rocha");
-        // this.registerTerrainPlane("terrain_cratera",       "terrain_cratera");
-        // this.registerTerrainPlane("terrain_objetivo",      "terrain_objetivo");
-        // this.registerTerrainPlane("terrain_surgimento",    "terrain_surgimento");
-        // Montanha
-        // this.registerTerrainPlane("terrain_montanha_norte",    "terrain_montanha_norte");
-        // this.registerTerrainPlane("terrain_montanha_oeste",    "terrain_montanha_oeste");
-        // this.registerTerrainPlane("terrain_montanha_leste",    "terrain_montanha_leste");
-        // this.registerTerrainPlane("terrain_montanha_sul",    "terrain_montanha_sul");
-        // this.registerTerrainPlane("terrain_montanha_noroeste",    "terrain_montanha_noroeste");
-        // this.registerTerrainPlane("terrain_montanha_nordeste",    "terrain_montanha_nordeste");
-        // this.registerTerrainPlane("terrain_montanha_sudeste",    "terrain_montanha_sudeste");
-        // this.registerTerrainPlane("terrain_montanha_sudoeste",    "terrain_montanha_sudoeste");
-        // this.registerTerrainPlane("terrain_montanha_centro",    "terrain_montanha_centro");
-        // Cratera Grande
-        // this.registerTerrainPlane("terrain_cratera_norte",    "terrain_cratera_norte");
-        // this.registerTerrainPlane("terrain_cratera_oeste",    "terrain_cratera_oeste");
-        // this.registerTerrainPlane("terrain_cratera_leste",    "terrain_cratera_leste");
-        // this.registerTerrainPlane("terrain_cratera_sul",    "terrain_cratera_sul");
-        // this.registerTerrainPlane("terrain_cratera_noroeste",    "terrain_cratera_noroeste");
-        // this.registerTerrainPlane("terrain_cratera_nordeste",    "terrain_cratera_nordeste");
-        // this.registerTerrainPlane("terrain_cratera_sudeste",    "terrain_cratera_sudeste");
-        // this.registerTerrainPlane("terrain_cratera_sudoeste",    "terrain_cratera_sudoeste");
-        // this.registerTerrainPlane("terrain_cratera_centro",    "terrain_cratera_centro");
 
         const masterObjetivoCube = B.MeshBuilder.CreateBox("master_objetivo_cubo", {}, this.scene);
         masterObjetivoCube.material = MaterialInstance.getMaterial("objetivo_cubo");
         masterObjetivoCube.setEnabled(false);
         this.masterMeshes.set("objetivo_cubo", masterObjetivoCube);
 
-        // const masterRoverBody = B.MeshBuilder.CreateBox("master_rover_body", {}, this.scene);
-        // masterRoverBody.material = MaterialInstance.getMaterial("rover_body");
-        // masterRoverBody.setEnabled(false);
-        // this.masterMeshes.set("rover_body", masterRoverBody);
-
-        // const masterRoverFrente = B.MeshBuilder.CreateBox("master_rover_frente", {}, this.scene);
-        // masterRoverFrente.material = MaterialInstance.getMaterial("rover_frente");
-        // masterRoverFrente.setEnabled(false);
-        // this.masterMeshes.set("rover_frente", masterRoverFrente);
-
-        // const masterMarcador = B.MeshBuilder.CreateBox("master_marcador", {}, this.scene);
-        // masterMarcador.material = MaterialInstance.getMaterial("marcador");
-        // masterMarcador.setEnabled(false);
-        // this.masterMeshes.set("marcador", masterMarcador);
-
-
-
-        await Promise.all([
-            this.loadModel("terrain_default",        "/models/terrain/TRANSPONIVEL.glb", .5),
-            this.loadModel("terrain_transponivel",   "/models/terrain/TRANSPONIVEL.glb", .5),
-            this.loadModel("terrain_cratera",        "/models/terrain/CRATERA.glb", .5, new B.Vector3(0, 0, 0)),
-            this.loadModel("terrain_rocha",          "/models/terrain/ROCHA.glb", .5),
-            this.loadModel("terrain_objetivo",       "/models/terrain/OBJETIVO_BASE.glb", .5),
-            this.loadModel("terrain_objetivo_glow",  "/models/terrain/OBJETIVO_BULBO.glb", .5, new B.Vector3(0, 0, 0)),
-            this.loadModel("terrain_surgimento",     "/models/terrain/SURGIMENTO_BASE.glb", 1),
-            this.loadModel("terrain_surgimento_glow","/models/terrain/SURGIMENTO_BULBO.glb", 1),
+        const loadTasks = [
+            () => this.loadModel("terrain_default",        "/models/terrain/TRANSPONIVEL.glb", .5),
+            () => this.loadModel("terrain_transponivel",   "/models/terrain/TRANSPONIVEL.glb", .5),
+            () => this.loadModel("terrain_cratera",        "/models/terrain/CRATERA.glb", .5, new B.Vector3(0, 0, 0)),
+            () =>this.loadModel("terrain_rocha",          "/models/terrain/ROCHA.glb", .5),
+            () => this.loadModel("terrain_objetivo",       "/models/terrain/OBJETIVO_BASE.glb", .5),
+            () => this.loadModel("terrain_objetivo_glow",  "/models/terrain/OBJETIVO_BULBO.glb", .5, new B.Vector3(0, 0, 0)),
+            () => this.loadModel("terrain_surgimento",     "/models/terrain/SURGIMENTO_BASE.glb", 1),
+            () => this.loadModel("terrain_surgimento_glow","/models/terrain/SURGIMENTO_BULBO.glb", 1),
             // MONTANHA
-            this.loadModel("terrain_montanha_norte",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, 0, 0)),
-            this.loadModel("terrain_montanha_oeste",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
-            this.loadModel("terrain_montanha_leste",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
-            this.loadModel("terrain_montanha_sul",       "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, Math.PI, 0)),
-            this.loadModel("terrain_montanha_noroeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, 0, 0)),
-            this.loadModel("terrain_montanha_nordeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
-            this.loadModel("terrain_montanha_sudeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, Math.PI, 0)),
-            this.loadModel("terrain_montanha_sudoeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
-            this.loadModel("terrain_montanha_centro",  "/models/terrain/montanha/MONTANHA_CENTRO.glb", .5, new B.Vector3(0, 0, 0)),
+            () => this.loadModel("terrain_montanha_norte",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, 0, 0)),
+            () => this.loadModel("terrain_montanha_oeste",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
+            () => this.loadModel("terrain_montanha_leste",     "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
+            () => this.loadModel("terrain_montanha_sul",       "/models/terrain/montanha/MONTANHA_BORDA.glb", .5, new B.Vector3(0, Math.PI, 0)),
+            () => this.loadModel("terrain_montanha_noroeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, 0, 0)),
+            () => this.loadModel("terrain_montanha_nordeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
+            () => this.loadModel("terrain_montanha_sudeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, Math.PI, 0)),
+            () => this.loadModel("terrain_montanha_sudoeste",  "/models/terrain/montanha/MONTANHA_CANTO.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
+            () => this.loadModel("terrain_montanha_centro",  "/models/terrain/montanha/MONTANHA_CENTRO.glb", .5, new B.Vector3(0, 0, 0)),
             // CRATERA GRANDE
-            this.loadModel("terrain_cratera_norte",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, 0, 0)),
-            this.loadModel("terrain_cratera_oeste",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
-            this.loadModel("terrain_cratera_leste",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
-            this.loadModel("terrain_cratera_sul",    "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, Math.PI, 0)),
-            this.loadModel("terrain_cratera_noroeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, 0, 0)),
-            this.loadModel("terrain_cratera_nordeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
-            this.loadModel("terrain_cratera_sudeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, Math.PI, 0)),
-            this.loadModel("terrain_cratera_sudoeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
-            this.loadModel("terrain_cratera_centro",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CENTRO.glb", .5, new B.Vector3(0, 0, 0)),
+            () => this.loadModel("terrain_cratera_norte",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, 0, 0)),
+            () => this.loadModel("terrain_cratera_oeste",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
+            () => this.loadModel("terrain_cratera_leste",  "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
+            () => this.loadModel("terrain_cratera_sul",    "/models/terrain/cratera_grande/CRATERA_GRANDE_BORDA.glb", .5, new B.Vector3(0, Math.PI, 0)),
+            () => this.loadModel("terrain_cratera_noroeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, 0, 0)),
+            () => this.loadModel("terrain_cratera_nordeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, -Math.PI/2, 0)),
+            () => this.loadModel("terrain_cratera_sudeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, Math.PI, 0)),
+            () => this.loadModel("terrain_cratera_sudoeste",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CANTO.glb", .5, new B.Vector3(0, Math.PI/2, 0)),
+            () => this.loadModel("terrain_cratera_centro",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CENTRO.glb", .5, new B.Vector3(0, 0, 0)),
             // OUTROS
-            this.loadModel("marcador",               "/models/others/MARCADOR.glb", 2),
-            this.loadModel("rover",                  "/models/rover/ROVER.glb", 1),
-        ]);
+            () => this.loadModel("marcador",               "/models/others/MARCADOR.glb", 2),
+            () => this.loadModel("rover",                  "/models/rover/ROVER.glb", 1),
+        ];
+
+
+        const total = loadTasks.length;
+        let loaded = 0;
+
+        // Executa todos em paralelo, mas reporta a cada conclusão
+        await Promise.all(
+        loadTasks.map(task => 
+                task().then(() => {
+                    loaded++;
+                    this.onProgress?.(loaded, total);
+                })
+            )
+        );
+
 
     }
 

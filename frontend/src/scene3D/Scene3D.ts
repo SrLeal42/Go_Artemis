@@ -28,12 +28,15 @@ export class Scene3D {
   public rover : Rover;
 
   private resizeObserver: ResizeObserver | null = null;
+  
+  public readonly _readyPromise: Promise<void>;
 
-  constructor(canvas : HTMLCanvasElement) {
+  constructor(canvas : HTMLCanvasElement, onProgress?: (loaded: number, total: number) => void) {
     this.canvas = canvas;
     this.engine = new B.Engine(this.canvas, true);
-
-    this.initialize();
+    
+    ModelInstance.onProgress = onProgress;
+    this._readyPromise = this.initialize();
 
   }
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import { useEffect, useRef, useImperativeHandle, forwardRef, useState } from 'react';
 import { Scene3D } from '../scene3D/Scene3D';
 
 import { SimulationController } from '../scene3D/SimulationController';
@@ -19,6 +19,9 @@ export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimula
   const sceneInstance = useRef<Scene3D | null>(null);
 
   const controllerRef = useRef<SimulationController | null>(null);
+
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
 
   useImperativeHandle(ref, () => ({
@@ -57,8 +60,14 @@ export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimula
   useEffect(() => {
     if (!canvasRef.current) return;
 
+    
+    const scene3d = new Scene3D(canvasRef.current, (loaded, total) => {
+        setLoadProgress(Math.round((loaded / total) * 100));
+    });
+    scene3d._readyPromise.then(() => setIsLoaded(true));
+
     // Inicia a cena e guarda o controle na referência
-    sceneInstance.current = new Scene3D(canvasRef.current);
+    sceneInstance.current = scene3d; // new Scene3D(canvasRef.current);
 
     controllerRef.current = new SimulationController(sceneInstance.current);
 
@@ -70,13 +79,25 @@ export const RoverScene = forwardRef<RoverSceneHandle, { commands: any; onSimula
       }
     };
   }, []);
-
+  
   return (
     <div className="scene-canvas-container">
       <canvas 
         ref={canvasRef} 
         style={{ display: 'block', width: '100%', height: '100%', outline: 'none' }} 
       />
+      {!isLoaded && (
+        <div className="loading-overlay">
+          <div className="loading-content">
+            <div className="loading-ring" />
+            <span className="loading-percent">{loadProgress}%</span>
+            <p className="loading-label">Carregando...</p>
+          </div>
+          <div className="loading-bar-track">
+            <div className="loading-bar-fill" style={{ width: `${loadProgress}%` }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 

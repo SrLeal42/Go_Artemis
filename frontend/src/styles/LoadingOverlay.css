@@ -1,0 +1,72 @@
+/* ── Loading Overlay (dentro do scene-canvas-container) ── */
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    background: rgba(15, 23, 42, 0.92);
+    z-index: 15;
+    animation: loadFadeIn 0.6s ease;
+}
+
+@keyframes loadFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Conteúdo central (anel + porcentagem) */
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Anel rotativo */
+.loading-ring {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px solid #1e293b;
+    border-top-color: #3b82f6;
+    animation: ringSpin 2s linear infinite;
+}
+
+@keyframes ringSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Número grande de porcentagem */
+.loading-percent {
+    font-family: 'Fira Code', monospace;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #f8fafc;
+    letter-spacing: 0.05em;
+}
+
+.loading-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Barra de progresso */
+.loading-bar-track {
+    width: 60%;
+    max-width: 240px;
+    height: 4px;
+    background: #1e293b;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.loading-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #34d399);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
