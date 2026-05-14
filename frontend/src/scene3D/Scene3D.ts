@@ -9,7 +9,7 @@ import { MaterialInstance } from './scripts/managers/MaterialManager';
 import { ModelInstance } from './scripts/managers/ModelManager';
 
 import { TerrainTypes, TileTraversal } from './scripts/terrain/TerrainTypes';
-import { RoverRelativeDirection, RoverWorldDirection } from './scripts/rover/RoverDirection';
+import { RoverRelativeDirection } from './scripts/rover/RoverDirection';
 
 import { ALL_BLINKING_LIGHTS, SPAWN_LIGHT, GLOW_LAYER, SCENE_LIGHTING } from './scripts/utilities/LightingConstants';
 
