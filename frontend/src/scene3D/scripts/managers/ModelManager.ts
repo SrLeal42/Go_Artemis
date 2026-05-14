@@ -2,6 +2,7 @@ import * as B from '@babylonjs/core';
 import '@babylonjs/loaders/glTF';
 
 import { MaterialInstance } from './MaterialManager';
+import { type AnimatedModelInstance } from './AnimationManager';
 
 import { SPAWN_LIGHT, GOAL_LIGHT } from '../utilities/LightingConstants';
 
@@ -11,6 +12,8 @@ class ModelManager {
     private masterMeshes: Map<string, B.Mesh> = new Map();
 
     private modelPositions: Map<string, B.Vector3[]> = new Map();
+
+    private animatedContainers: Map<string, B.AssetContainer> = new Map();
 
     public onProgress?: (loaded: number, total: number) => void;
 
@@ -34,7 +37,7 @@ class ModelManager {
             () => this.loadModel("terrain_default",        "/models/terrain/TRANSPONIVEL.glb", .5),
             () => this.loadModel("terrain_transponivel",   "/models/terrain/TRANSPONIVEL.glb", .5),
             () => this.loadModel("terrain_cratera",        "/models/terrain/CRATERA.glb", .5, new B.Vector3(0, 0, 0)),
-            () =>this.loadModel("terrain_rocha",          "/models/terrain/ROCHA.glb", .5),
+            () => this.loadModel("terrain_rocha",          "/models/terrain/ROCHA.glb", .5),
             () => this.loadModel("terrain_objetivo",       "/models/terrain/OBJETIVO_BASE.glb", .5),
             () => this.loadModel("terrain_objetivo_glow",  "/models/terrain/OBJETIVO_BULBO.glb", .5, new B.Vector3(0, 0, 0)),
             () => this.loadModel("terrain_surgimento",     "/models/terrain/SURGIMENTO_BASE.glb", 1),
@@ -61,7 +64,8 @@ class ModelManager {
             () => this.loadModel("terrain_cratera_centro",    "/models/terrain/cratera_grande/CRATERA_GRANDE_CENTRO.glb", .5, new B.Vector3(0, 0, 0)),
             // OUTROS
             () => this.loadModel("marcador",               "/models/others/MARCADOR.glb", 2),
-            () => this.loadModel("rover",                  "/models/rover/ROVER.glb", 1),
+            // () => this.loadModel("rover",                  "/models/rover/ROVER.glb", 1),
+            () => this.loadAnimatedModel("rover", "/models/rover/ROVER.glb", 1, new B.Vector3(0, 0, 0)),
         ];
 
 
@@ -217,6 +221,31 @@ class ModelManager {
         root.dispose(); // Limpa o nó __root__ agora desnecessário
     }
 
+    private async loadAnimatedModel(
+        key: string,
+        path: string,
+        scaleFactor?: number,
+        rotateFactor?: B.Vector3
+    ): Promise<void> {
+        const container = await B.SceneLoader.LoadAssetContainerAsync("", path, this.scene);
+
+        // Ajusta escala no root
+        if (scaleFactor) {
+            container.meshes[0].scaling.setAll(scaleFactor);
+        }
+
+        if (rotateFactor){
+            container.meshes[0].rotationQuaternion = null;
+            container.meshes[0].rotation.set(rotateFactor.x, rotateFactor.y, rotateFactor.z);
+        }
+
+        // Para todas as animações por padrão
+        container.animationGroups.forEach(ag => ag.stop());
+
+        this.animatedContainers.set(key, container);
+    }
+
+
 
     public getModelPositions(key: string): B.Vector3[] {
         return this.modelPositions.get(key) ?? [];
@@ -233,6 +262,24 @@ class ModelManager {
 
         return mesh;
     }
+
+    public spawnAnimated(key: string, name: string) : AnimatedModelInstance {
+        const container = this.animatedContainers.get(key);
+        if (!container) {
+            throw new Error(`Container animado "${key}" não encontrado.`);
+        }
+
+        const instance = container.instantiateModelsToScene(
+            (sourceName) => `${name}_${sourceName}`
+        );
+
+        return {
+            rootNodes: instance.rootNodes,
+            animationGroups: instance.animationGroups,
+            skeletons: instance.skeletons
+        };
+    }
+
 
 
 }

@@ -181,13 +181,7 @@ export class Scene3D {
 
   public resetRover(): void {
     const spawn = this.terrain.spawnPosition;
-    this.rover.setGridPosition(spawn.x, spawn.z);
-    this.rover.facingDirection = RoverWorldDirection.NORTH;
-    
-    if (this.rover.pivot) {
-        this.rover.pivot.rotation.y = 0;
-    }
-
+    this.rover.reset(spawn.x, spawn.z);
   }
 
 
