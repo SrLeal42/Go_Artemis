@@ -11,6 +11,7 @@ import type { CommandNode } from './engineAST/models/CMDTypes.ts';
 import type { RoverSceneHandle } from './components/RoverScene.tsx';
 
 import { SimulationStatus } from './scene3D/models/SimulationStatusTypes.ts';
+import { SoundInstance } from './scene3D/scripts/managers/SoundManager.ts';
 
 // ----------------------------------------------------
 // Dica Profissional: Expandimos os Tipos globais do TypeScript (Window)
@@ -133,6 +134,9 @@ function App() {
        console.warn("Falha na compilação, o motor não vai iniciar.");
        return; 
     }
+
+    // Desbloqueia o áudio na primeira interação do usuário
+    SoundInstance.unlock();
 
     setIsSimulating(true);
     setActiveCommands(compileResponse.comands)

@@ -7,6 +7,7 @@ import { Goal } from './scripts/Goal';
 
 import { MaterialInstance } from './scripts/managers/MaterialManager';
 import { ModelInstance } from './scripts/managers/ModelManager';
+import { SoundInstance } from './scripts/managers/SoundManager';
 
 import { TerrainTypes, TileTraversal } from './scripts/terrain/TerrainTypes';
 import { RoverRelativeDirection } from './scripts/rover/RoverDirection';
@@ -123,6 +124,7 @@ export class Scene3D {
 
     MaterialInstance.initialize(scene);
     await ModelInstance.initialize(scene);
+    await SoundInstance.initialize();
 
 
     this.terrain = new Terrain(scene);
@@ -211,6 +213,8 @@ export class Scene3D {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
+
+    SoundInstance.dispose();
     
     if (this.scene){
       this.scene.dispose();
