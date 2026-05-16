@@ -6,7 +6,7 @@ import { RoverWorldDirection, RoverRelativeDirection } from './RoverDirection';
 import { ModelInstance } from '../managers/ModelManager';
 import { AnimationInstance } from '../managers/AnimationManager';
 
-import { delay } from '../utilities/Utilities';
+import { delay, shortestAngleDelta } from '../utilities/Utilities';
 
 export class Rover {
 
@@ -34,6 +34,18 @@ export class Rover {
     private moveAnimX: B.Animation;
     private moveAnimZ: B.Animation;
     private moveAnimSpeed = .5;
+    private readonly DIRECTION_MOVE_ANIMATIONS: Record<string, string> = {
+        [RoverRelativeDirection.FRENTE]: 'girar-frente_animation',
+        [RoverRelativeDirection.TRAS]: 'girar-tras_animation',
+    };
+    
+    private turnAnimY: B.Animation;
+    private turnAnimSpeed = .7;
+    private readonly DIRECTION_TURN_ANIMATIONS: Record<string, string> = {
+        [RoverRelativeDirection.DIREITA]: 'virar-esquerda_animation',
+        [RoverRelativeDirection.ESQUERDA]: 'virar-direita_animation',
+    };
+
     private idleAnimSpeed = .5;
     // private moveEasing: B.EasingFunction;
 
@@ -99,6 +111,12 @@ export class Rover {
         );
         this.moveAnimZ.setEasingFunction(ease);
 
+        this.turnAnimY = new B.Animation("roverTurnY", "rotation.y", AnimationInstance.fps,
+            B.Animation.ANIMATIONTYPE_FLOAT,
+            B.Animation.ANIMATIONLOOPMODE_CONSTANT
+        );
+        this.turnAnimY.setEasingFunction(ease);
+
     }
 
 
@@ -137,18 +155,19 @@ export class Rover {
     }
 
     public async move(targetX: number, targetZ: number, direction: RoverRelativeDirection): Promise<void> {
-
-        if (direction === RoverRelativeDirection.FRENTE){
-            
-            const duration = AnimationInstance.getDurationMs("rover", "girar-frente_animation") / this.moveAnimSpeed;
-            
-            AnimationInstance.play("rover", "girar-frente_animation", false, this.moveAnimSpeed);
+        
+        const animName = this.DIRECTION_MOVE_ANIMATIONS[direction];            
+        const duration = AnimationInstance.getDurationMs("rover", animName) / this.moveAnimSpeed;
+          
+        if (duration > 0){
+  
+            AnimationInstance.play("rover", animName, false, this.moveAnimSpeed);
             
             await this.animateToPosition(targetX, targetZ, duration);
 
         } else {
             
-            await delay(2000);
+            await delay(1500);
             
             this.setGridPosition(targetX, targetZ);
         }    
@@ -159,16 +178,38 @@ export class Rover {
     public async turn(relativeDir: RoverRelativeDirection): Promise<void> {
         const arrayRoverDirection = Object.values(RoverWorldDirection);
         
-        await delay(1000);
+        // await delay(1000);
 
         // DIREITA (1): (facing + 1) % 4
         // ESQUERDA (3): (facing + 3) % 4
+        const newDirection = arrayRoverDirection[(this.facingDirection + relativeDir) % 4];
+        const animName = this.DIRECTION_TURN_ANIMATIONS[relativeDir];
+        
+        const duration = AnimationInstance.getDurationMs("rover", animName) / this.turnAnimSpeed;
+        
         this.facingDirection = arrayRoverDirection[(this.facingDirection + relativeDir) % 4];
         
-        if (this.pivot) {
-            this.pivot.rotation.y = this.facingDirection * (Math.PI / 2);
+        if (duration > 0) {
+            // Toca a animação do modelo
+            AnimationInstance.play("rover", animName, false, this.turnAnimSpeed);
+            
+            // Frame inicial para começar a rodar;
+            // 12 é o frame no Blender; Provavelmente em 30 fps;
+            // 2 por que aqui é 60 fps;
+            // this.turnAnimSpeed para se adaptar a velocidade;
+            const initialRotateFrame = 12 * 2 / this.turnAnimSpeed;
+            const finalRotateFrame = 40 * 2 / this.turnAnimSpeed;
+            // Interpola a rotação do pivot em sincronia
+            await this.animateRotation(newDirection, duration, initialRotateFrame, finalRotateFrame);
+        } else {
+            await delay(1000);
+        
+            if (this.pivot) {
+                this.pivot.rotation.y = newDirection * (Math.PI / 2);
+            }
         }
         
+        this.facingDirection = newDirection;
         
 
     }
@@ -210,6 +251,47 @@ export class Rover {
         });
 
     }
+
+
+    private animateRotation(targetDirection: number, 
+                            durationMs: number, 
+                            rotationStartFrame: number = 0, 
+                            rotationEndFrame: number = 0
+                        ): Promise<void> {
+
+        return new Promise((resolve) => {
+            const targetY = targetDirection * (Math.PI / 2);
+            const currentY = this.pivot.rotation.y;
+            
+            // Normaliza para pegar o caminho mais curto (-π a +π)
+            const delta = shortestAngleDelta(currentY, targetY);
+            
+            const totalFrames = Math.round((durationMs / 1000) * AnimationInstance.fps);
+            
+            const clampedStart = Math.min(rotationStartFrame, totalFrames);
+            const clampedEnd = Math.max(rotationEndFrame, clampedStart);
+
+            this.turnAnimY.setKeys([
+                { frame: 0,            value: currentY },           // mantém parado
+                { frame: clampedStart, value: currentY },           // ainda parado até aqui
+                { frame: clampedEnd,   value: currentY + delta },    // gira daqui até o fim
+                { frame: totalFrames,  value: currentY + delta }    // gira daqui até o fim
+            ]);
+            
+            this.scene.beginDirectAnimation(
+                this.pivot,
+                [this.turnAnimY],
+                0, totalFrames,
+                false, 1,
+                () => {
+                    this.pivot.rotation.y = targetY;
+                    resolve();
+                }
+            );
+        });
+
+    }
+
 
 
     public reset(spawnX: number, spawnZ: number): void {

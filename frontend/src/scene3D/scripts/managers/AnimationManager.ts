@@ -50,7 +50,12 @@ class AnimationManager {
     }
 
     public stop(key: string): void {
-        this.registry.get(key)?.forEach(ag => ag.stop());
+        
+        this.registry.get(key)?.forEach(ag => {
+            ag.goToFrame(ag.from);  // reseta os bones para o frame inicial
+            ag.stop();
+        });
+
     }
 
     public getGroups(key: string): B.AnimationGroup[] | undefined {
