@@ -1,15 +1,11 @@
 import * as B from '@babylonjs/core';
 
-// ─── Categorias de Som ────────────────────────────────────────
-
 export const SoundCategory = {
     SFX: 'sfx',
     UI:  'ui',
 } as const;
 
 export type SoundCategory = typeof SoundCategory[keyof typeof SoundCategory];
-
-// ─── Tipos Internos ───────────────────────────────────────────
 
 interface SoundEntry {
     sound: B.StaticSound;
@@ -20,9 +16,9 @@ export interface SoundLoadOptions {
     spatialEnabled?: boolean;
     loop?: boolean;
     volume?: number;
+    autoplay?: boolean;
 }
 
-// ─── Manager ──────────────────────────────────────────────────
 
 class SoundManager {
 
@@ -39,8 +35,7 @@ class SoundManager {
     private _isReady = false;
     public get isReady(): boolean { return this._isReady; }
 
-    // ── Inicialização ──────────────────────────────────────
-
+    
     public async initialize(): Promise<void> {
         if (this.audioEngine) return; // já inicializado
 
@@ -57,7 +52,34 @@ class SoundManager {
             this.buses.set(category, bus);
         }
 
+        await this.initializeSounds();
+        
         this._isReady = true;
+    }
+
+
+    private async initializeSounds(): Promise<void> {
+
+        const loadTasks = [
+            // Ambience
+            () => this.load("wind",  "/sounds/scene/desert_wind.mp3",  SoundCategory.SFX, { volume: .25, loop: true, autoplay: true }),
+            // Rover
+            // () => this.load("rover_move",  "/sounds/rover/move.mp3",  SoundCategory.SFX, { spatialEnabled: true }),
+            // () => this.load("rover_turn",  "/sounds/rover/turn.mp3",  SoundCategory.SFX, { spatialEnabled: true }),
+            // Eventos
+            () => this.load("sim_success", "/sounds/event/win_effect.mp3", SoundCategory.SFX, { volume: .3 }),
+            () => this.load("sim_error", "/sounds/event/error_effect.mp3", SoundCategory.SFX, { volume: .4 }),
+            () => this.load("sim_end", "/sounds/event/end_effect.mp3", SoundCategory.SFX, { volume: .7 }),
+            // UI
+            () => this.load("btn_hover",    "/sounds/ui/button_hover.mp3",       SoundCategory.UI),
+            () => this.load("btn_click_1",    "/sounds/ui/button_click_1.mp3",   SoundCategory.UI, { volume: .5 }),
+            () => this.load("btn_click_2",    "/sounds/ui/button_click_2.mp3",   SoundCategory.UI, { volume: .5 }),
+            () => this.load("btn_click_3",    "/sounds/ui/button_click_3.mp3",   SoundCategory.UI, { volume: .5 }),
+            () => this.load("btn_switch_1",    "/sounds/ui/btn_switch_1.mp3",    SoundCategory.UI, { volume: .4 }),
+            () => this.load("btn_switch_2",    "/sounds/ui/btn_switch_2.mp3",    SoundCategory.UI, { volume: .4 }),
+        ];
+
+        await Promise.all(loadTasks.map(task => task()));
     }
 
 
@@ -70,7 +92,6 @@ class SoundManager {
         await this.audioEngine.unlockAsync();
     }
 
-    // ── Carregamento de Sons ────────────────────────────────
 
     public async load(
         key: string,
@@ -93,13 +114,14 @@ class SoundManager {
             spatialEnabled: options?.spatialEnabled ?? false,
             loop:           options?.loop ?? false,
             volume:         options?.volume ?? 1,
+            autoplay:       options?.autoplay ?? false,
             outBus:         bus ?? undefined,
         }, this.audioEngine);
 
         this.sounds.set(key, { sound, category });
     }
 
-    // ── Playback ─────────────────────────────────────────────
+
 
     public play(key: string, loop?: boolean): void {
         const entry = this.sounds.get(key);
@@ -123,8 +145,6 @@ class SoundManager {
         this.sounds.get(key)?.sound.resume();
     }
 
-    // ── Áudio Espacial ───────────────────────────────────────
-
     /**
      * Vincula um som já carregado a um mesh/TransformNode.
      * O som acompanha automaticamente a posição do mesh.
@@ -137,8 +157,7 @@ class SoundManager {
         entry.sound.spatial.attach(node);
     }
 
-    // ── Volume ───────────────────────────────────────────────
-
+    
     /**
      * Define o volume master (afeta todas as categorias).
      * @param volume - 0 a 1
@@ -169,13 +188,10 @@ class SoundManager {
         return this.volumes.get(category) ?? 1;
     }
 
-    // ── Utilitários ──────────────────────────────────────────
 
     public getSound(key: string): B.StaticSound | undefined {
         return this.sounds.get(key)?.sound;
     }
-
-    // ── Cleanup ──────────────────────────────────────────────
 
     public dispose(): void {
         this.sounds.forEach(entry => entry.sound.dispose());

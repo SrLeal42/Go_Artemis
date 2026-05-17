@@ -1,0 +1,109 @@
+.volume-control {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 5rem;
+    z-index: 900;
+}
+
+.volume-fab {
+    width: 48px;
+    height: 48px;
+    border-radius: 30%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #60a5fa;
+    background: rgba(30, 30, 40, 0.8);
+    backdrop-filter: blur(12px);
+
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.volume-fab:hover {
+    background: rgba(41, 41, 54, 0.8);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.volume-popover {
+    position: absolute;
+    bottom: 58px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    background: rgba(30, 30, 40, .9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 7px;
+    padding: 16px 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    animation: volumeSlideUp 0.15s ease-out;
+}
+
+
+.volume-slider {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    -webkit-appearance: none;
+    appearance: none;
+    
+    height: 120px;
+    width: 6px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.volume-slider:hover {
+    opacity: 1;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+    background: linear-gradient(
+        to top,
+        #528acf var(--volume-fill),
+        rgba(60, 77, 100, 0.9) var(--volume-fill)
+    );
+    border-radius: 3px;
+}
+
+.volume-slider::-moz-range-track {
+    background: linear-gradient(
+        to top,
+        #528acf var(--volume-fill),
+        rgba(60, 77, 100, 0.9) var(--volume-fill)
+    );
+    border-radius: 3px;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 25%;
+    background: #6fb0ff;
+    cursor: pointer;
+    border: none;
+}
+
+
+@keyframes volumeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}

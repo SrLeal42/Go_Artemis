@@ -5,6 +5,7 @@ import './styles/SimulationOverlay.css';
 import RoverScene from './components/RoverScene.tsx';
 import CodeEditor from './components/CodeEditor.tsx';
 import HelpModal from './components/HelpModal.tsx';
+import VolumeControl from './components/modals/VolumeControl.tsx';
 
 import type { CompilerResult } from './engineAST/models/CompilerResultType.ts';
 import type { CommandNode } from './engineAST/models/CMDTypes.ts';
@@ -25,32 +26,14 @@ declare global {
   }
 }
 
+const SIMULATION_END_SOUNDS: Record<string, string> = {
+    [SimulationStatus.SUCCESS]: "sim_success",
+    [SimulationStatus.ERROR]:   "sim_error",
+    [SimulationStatus.END]:     "sim_end",
+};
+
 function App() {
   const [code, setCode] = useState<string>("FUNCAO Verifica_Frente_e_Gira {\n\nENQUANTO NAO LIVRE FRENTE {\n\nIF LIVRE DIREITA {\n GIRA DIREITA\n} ELSE {\n GIRA ESQUERDA\n}\n\n}\n\n}\n\nREPEAT 50 {\n\nVerifica_Frente_e_Gira\n\nIF OBJETIVO DIREITA {\nGIRA DIREITA \n}\n\nIF OBJETIVO ESQUERDA {\nGIRA ESQUERDA\n}\n\nAVANCA 1\n}\n");
-  // const [code, setCode] = useState<string>(
-  //   "FUNCAO explorar {\n" +
-  //   "MARCAR\n\n" +
-  //   "ENQUANTO NAO LIVRE FRENTE {\n" +
-  //   "  GIRA DIREITA\n" +
-  //   "}\n\n" +
-  //   "IF MARCADO FRENTE {\n" +
-  //   "  GIRA ESQUERDA\n" +
-  //   "  IF MARCADO FRENTE {\n" +
-  //   "    GIRA ESQUERDA\n" +
-  //   "  }\n" +
-  //   "}\n\n" +
-  //   "AVANCA 1\n" +
-  //   "}\n\n" +
-  //   "REPEAT 50 {\n" +
-  //   "explorar\n\n" +
-  //   "IF OBJETIVO DIREITA {\n" +
-  //   "  GIRA DIREITA\n" +
-  //   "}\n\n" +
-  //   "IF OBJETIVO ESQUERDA {\n" +
-  //   "  GIRA ESQUERDA\n" +
-  //   "}\n" +
-  //   "}\n"
-  // );
 
   const [activeCommands, setActiveCommands] = useState<CommandNode[]>([])
 
@@ -71,8 +54,10 @@ function App() {
   const handleCameraToggle = () => {
       roverSceneRef.current?.toggleCamera();
       setIsTopView(prev => !prev);
-  };
 
+      SoundInstance.play(isTopView ? "btn_switch_1" : "btn_switch_2");
+  };
+  
   // useEffect vai rodar 1 vez assim que a página abrir
   useEffect(() => {
     
@@ -137,6 +122,7 @@ function App() {
 
     // Desbloqueia o áudio na primeira interação do usuário
     SoundInstance.unlock();
+    SoundInstance.play("btn_click_1");
 
     setIsSimulating(true);
     setActiveCommands(compileResponse.comands)
@@ -146,18 +132,26 @@ function App() {
   const handleStop = () => {
     roverSceneRef.current?.stop();
     resetSimulationVariables();
+    SoundInstance.play("btn_click_3");
   };
   
   const handleReset = () => {
     roverSceneRef.current?.reset();
     resetSimulationVariables();
+    SoundInstance.play("btn_click_2");
   };
   
   const handleNewLevel = () => {
     roverSceneRef.current?.regenerateTerrain();
     resetSimulationVariables();
+    SoundInstance.play("btn_click_2");
   };
 
+  const handleButtonHover = () => {
+    SoundInstance.play("btn_hover");
+  };
+
+  
   const handleSimulationEnd = (status: SimulationStatus, message?: string, steps?: number) => {
     setIsSimulating(false);
     setStepCount(steps ?? 0);
@@ -165,6 +159,10 @@ function App() {
     if (status === SimulationStatus.SUCCESS || status === SimulationStatus.ERROR || status === SimulationStatus.END) {
       setSimulationResult(status);
       if (message) setErrorMessage(message);
+      
+      const soundKey = SIMULATION_END_SOUNDS[status];
+      if (soundKey) SoundInstance.play(soundKey);
+
     }
 
   };
@@ -196,18 +194,18 @@ function App() {
             <h2>{'</>'}</h2>
             <div className="editor-actions">
               {isSimulating ? (
-                  <button className="action-btn btn-stop" data-tooltip="Parar" onClick={handleStop}>
+                  <button className="action-btn btn-stop" data-tooltip="Parar" onClick={handleStop} onMouseEnter={handleButtonHover}>
                       ⏹
                   </button>
               ) : (
-                  <button className="action-btn btn-run" data-tooltip="Rodar" onClick={handleRun} disabled={!isWasmLoaded}>
+                  <button className="action-btn btn-run" data-tooltip="Rodar" onClick={handleRun} onMouseEnter={handleButtonHover} disabled={!isWasmLoaded}>
                       ▶
                   </button>
               )}
-              <button className="action-btn btn-reset" data-tooltip="Reiniciar" onClick={handleReset} disabled={isSimulating}>
+              <button className="action-btn btn-reset" data-tooltip="Reiniciar" onClick={handleReset} onMouseEnter={handleButtonHover} disabled={isSimulating}>
                   ↻
               </button>
-              <button className="action-btn btn-new-level" data-tooltip="Regerar Terreno" onClick={handleNewLevel} disabled={isSimulating}>
+              <button className="action-btn btn-new-level" data-tooltip="Regerar Terreno" onClick={handleNewLevel} onMouseEnter={handleButtonHover} disabled={isSimulating}>
                   ⚄
               </button>
             </div>
@@ -269,12 +267,12 @@ function App() {
                       <div className="overlay-actions">
                           <button className="overlay-btn btn-retry" onClick={() => {
                               handleReset();
-                          }}>
+                          }} onMouseEnter={handleButtonHover}>
                               Reiniciar
                           </button>
                           <button className="overlay-btn btn-new" onClick={() => {
                               handleNewLevel();
-                          }}>
+                          }} onMouseEnter={handleButtonHover}>
                               Novo Level
                           </button>
 
@@ -287,7 +285,8 @@ function App() {
         </div>
 
       </main>
-
+          
+      <VolumeControl />
       
       <button
         className="help-fab"
