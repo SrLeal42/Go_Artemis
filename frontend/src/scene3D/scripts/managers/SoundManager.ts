@@ -62,10 +62,11 @@ class SoundManager {
 
         const loadTasks = [
             // Ambience
-            () => this.load("wind",  "/sounds/scene/desert_wind.mp3",  SoundCategory.SFX, { volume: .25, loop: true, autoplay: true }),
+            () => this.load("wind",  "/sounds/scene/desert_wind.mp3",  SoundCategory.SFX, { volume: .15, loop: true, autoplay: true }),
             // Rover
-            // () => this.load("rover_move",  "/sounds/rover/move.mp3",  SoundCategory.SFX, { spatialEnabled: true }),
-            // () => this.load("rover_turn",  "/sounds/rover/turn.mp3",  SoundCategory.SFX, { spatialEnabled: true }),
+            () => this.load("rover_idle",  "/sounds/scene/rover/rover_idle_motor.mp3",  SoundCategory.SFX, { volume: .3, spatialEnabled: true, loop: true, autoplay: true,  }),
+            () => this.load("rover_move",  "/sounds/scene/rover/rover_move_motor.mp3",  SoundCategory.SFX, { volume: 0, spatialEnabled: true, loop: true }),
+            () => this.load("rover_turn",  "/sounds/scene/rover/rover_turn_motor.mp3",  SoundCategory.SFX, { volume: 0, spatialEnabled: true, loop: true }),
             // Eventos
             () => this.load("sim_success", "/sounds/event/win_effect.mp3", SoundCategory.SFX, { volume: .3 }),
             () => this.load("sim_error", "/sounds/event/error_effect.mp3", SoundCategory.SFX, { volume: .4 }),
@@ -157,7 +158,34 @@ class SoundManager {
         entry.sound.spatial.attach(node);
     }
 
-    
+    public configureSpatial(key: string, options: {
+        distanceModel?: "linear" | "inverse" | "exponential";
+        rolloffFactor?: number;
+        refDistance?: number;
+        maxDistance?: number;
+    }): void {
+        const entry = this.sounds.get(key);
+        if (!entry) return;
+
+        const spatial = entry.sound.spatial;
+        if (!spatial) return;
+
+        if (options.distanceModel !== undefined) spatial.distanceModel = options.distanceModel;
+        if (options.rolloffFactor !== undefined) spatial.rolloffFactor = options.rolloffFactor;
+        // if (options.refDistance !== undefined)   spatial.refDistance = options.refDistance;
+        if (options.maxDistance !== undefined)   spatial.maxDistance = options.maxDistance;
+    }
+
+    /**
+     * Vincula o listener de áudio a uma câmera.
+     * Deve ser chamado sempre que a câmera ativa mudar.
+     */
+    public attachListenerToCamera(camera: B.Camera): void {
+        if (!this.audioEngine) return;
+        this.audioEngine.listener.attach(camera);
+    }
+
+
     /**
      * Define o volume master (afeta todas as categorias).
      * @param volume - 0 a 1
@@ -188,6 +216,19 @@ class SoundManager {
         return this.volumes.get(category) ?? 1;
     }
 
+    public setSoundVolume(key: string, volume: number): void {
+        const entry = this.sounds.get(key);
+
+        if (!entry) return;
+        entry.sound.volume = Math.max(0, Math.min(volume, 1));
+    }
+
+    public setSoundPlaybackRate(key: string, rate: number): void {
+        const entry = this.sounds.get(key);
+
+        if (!entry) return;
+        entry.sound.playbackRate = Math.max(0.1, Math.min(rate, 4));
+    }
 
     public getSound(key: string): B.StaticSound | undefined {
         return this.sounds.get(key)?.sound;

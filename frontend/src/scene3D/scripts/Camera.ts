@@ -1,5 +1,7 @@
 import * as B from '@babylonjs/core';
 
+import { SoundInstance } from './managers/SoundManager';
+
 export class Camera {
 
     public scene: B.Scene;
@@ -34,7 +36,8 @@ export class Camera {
         this.topDownCamera.setTarget(B.Vector3.Zero());
         
         this.scene.activeCamera =  this.topDownCamera;
-        
+
+        SoundInstance.attachListenerToCamera(this.scene.activeCamera!);
     }
 
     public toggleCamera() {
@@ -48,6 +51,7 @@ export class Camera {
             this.scene.activeCamera = this.topDownCamera;
             this.isTopViewActive = true;
         }
-    
+
+        SoundInstance.attachListenerToCamera(this.scene.activeCamera);
     }
 }

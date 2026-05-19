@@ -5,6 +5,7 @@ import { RoverWorldDirection, RoverRelativeDirection } from './RoverDirection';
 
 import { ModelInstance } from '../managers/ModelManager';
 import { AnimationInstance } from '../managers/AnimationManager';
+import { SoundInstance } from '../managers/SoundManager';
 
 import { delay, shortestAngleDelta } from '../utilities/Utilities';
 
@@ -48,6 +49,15 @@ export class Rover {
 
     private idleAnimSpeed = .5;
     // private moveEasing: B.EasingFunction;
+
+    private distanceModel : "exponential" | "linear" | "inverse" = "exponential";
+    private rolloffFactor = 1;
+    private refDistance = 5;
+    private maxDistance = 100;
+
+    private maxVolumeMove = .5;
+
+    private _audioObservers: Map<string, B.Observer<B.Scene>> = new Map();
 
     public isInicialized = false;
 
@@ -117,6 +127,32 @@ export class Rover {
         );
         this.turnAnimY.setEasingFunction(ease);
 
+
+        SoundInstance.attachToMesh("rover_idle", this.pivot);
+        SoundInstance.play("rover_idle", true);
+        SoundInstance.configureSpatial("rover_idle", {
+            distanceModel: this.distanceModel,
+            rolloffFactor: this.rolloffFactor,
+            refDistance: this.refDistance,
+            maxDistance: this.maxDistance,
+        });
+
+        SoundInstance.attachToMesh("rover_move", this.pivot);
+        SoundInstance.configureSpatial("rover_move", {
+            distanceModel: this.distanceModel,
+            rolloffFactor: this.rolloffFactor,
+            refDistance: this.refDistance,
+            maxDistance: this.maxDistance,
+        });
+
+        SoundInstance.attachToMesh("rover_turn", this.pivot);
+        SoundInstance.configureSpatial("rover_turn", {
+            distanceModel: this.distanceModel,
+            rolloffFactor: this.rolloffFactor,
+            refDistance: this.refDistance,
+            maxDistance: this.maxDistance,
+        });
+
     }
 
 
@@ -163,6 +199,8 @@ export class Rover {
   
             AnimationInstance.play("rover", animName, false, this.moveAnimSpeed);
             
+            this.startMoveAudio("rover_move", duration);
+
             await this.animateToPosition(targetX, targetZ, duration);
 
         } else {
@@ -193,6 +231,8 @@ export class Rover {
             // Toca a animação do modelo
             AnimationInstance.play("rover", animName, false, this.turnAnimSpeed);
             
+            this.startMoveAudio("rover_turn", duration);
+
             // Frame inicial para começar a rodar;
             // 12 é o frame no Blender; Provavelmente em 30 fps;
             // 2 por que aqui é 60 fps;
@@ -291,13 +331,69 @@ export class Rover {
         });
 
     }
+    
+    private startMoveAudio(soundName: string, durationMs: number): void {
+        // Para qualquer instância anterior desse mesmo som
+        this.stopMoveAudio(soundName);
 
+        SoundInstance.setSoundVolume(soundName, 0);
+        SoundInstance.play(soundName, true);
+
+        const startTime = performance.now();
+
+        const minPlaybackRate = 0.8;
+        const maxPlaybackRate = 1.2;
+
+        const observer = this.scene.onBeforeRenderObservable.add(() => {
+            const elapsed = performance.now() - startTime;
+            const t = Math.min(elapsed / durationMs, 1);
+
+            const envelope = Math.sin(t * Math.PI);
+
+            SoundInstance.setSoundVolume(soundName, envelope * this.maxVolumeMove);
+            SoundInstance.setSoundPlaybackRate(soundName,
+                minPlaybackRate + envelope * (maxPlaybackRate - minPlaybackRate)
+            );
+
+            if (t >= 1) {
+                this.stopMoveAudio(soundName);
+            }
+        });
+
+        this._audioObservers.set(soundName, observer);
+    }
+
+
+    private stopMoveAudio(soundName?: string): void {
+
+        if (soundName) {
+            // Para um som específico
+            const observer = this._audioObservers.get(soundName);
+            if (observer) {
+                this.scene.onBeforeRenderObservable.remove(observer);
+                this._audioObservers.delete(soundName);
+            }
+            SoundInstance.setSoundVolume(soundName, 0);
+            SoundInstance.stop(soundName);
+        } else {
+            // Para todos
+            this._audioObservers.forEach((observer, key) => {
+                this.scene.onBeforeRenderObservable.remove(observer);
+                SoundInstance.setSoundVolume(key, 0);
+                SoundInstance.stop(key);
+            });
+            this._audioObservers.clear();
+        }
+
+    }
 
 
     public reset(spawnX: number, spawnZ: number): void {
         this.scene.stopAnimation(this.pivot);
         this.currentMovement = null;
         
+        this.stopMoveAudio();
+
         AnimationInstance.stop("rover");
         
         this.setGridPosition(spawnX, spawnZ);
