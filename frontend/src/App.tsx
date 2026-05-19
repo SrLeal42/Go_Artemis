@@ -14,6 +14,10 @@ import type { RoverSceneHandle } from './components/RoverScene.tsx';
 import { SimulationStatus } from './scene3D/models/SimulationStatusTypes.ts';
 import { SoundInstance } from './scene3D/scripts/managers/SoundManager.ts';
 
+import { StorageKeys } from './constants/StorageKeys.ts';
+import { DEFAULT_USER_CODE } from './constants/DefaultCode.ts';
+import { SIMULATION_END_SOUNDS } from './constants/SimulationSounds.ts';
+
 // ----------------------------------------------------
 // Dica Profissional: Expandimos os Tipos globais do TypeScript (Window)
 // Isso evita alertas vermelhos quando o TS perceber que criamos variáveis dinâmicas!
@@ -26,14 +30,13 @@ declare global {
   }
 }
 
-const SIMULATION_END_SOUNDS: Record<string, string> = {
-    [SimulationStatus.SUCCESS]: "sim_success",
-    [SimulationStatus.ERROR]:   "sim_error",
-    [SimulationStatus.END]:     "sim_end",
-};
+
 
 function App() {
-  const [code, setCode] = useState<string>("FUNCAO Verifica_Frente_e_Gira {\n\nENQUANTO NAO LIVRE FRENTE {\n\nIF LIVRE DIREITA {\n GIRA DIREITA\n} ELSE {\n GIRA ESQUERDA\n}\n\n}\n\n}\n\nREPEAT 50 {\n\nVerifica_Frente_e_Gira\n\nIF OBJETIVO DIREITA {\nGIRA DIREITA \n}\n\nIF OBJETIVO ESQUERDA {\nGIRA ESQUERDA\n}\n\nAVANCA 1\n}\n");
+  
+  const [code, setCode] = useState<string>(() => {
+      return localStorage.getItem(StorageKeys.USER_CODE) ?? DEFAULT_USER_CODE;
+  });
 
   const [activeCommands, setActiveCommands] = useState<CommandNode[]>([])
 
@@ -80,6 +83,10 @@ function App() {
         console.log("// Falha ao carregar o compilador. Olhe o Console (F12) para detalhes.");
       });
   }, []);
+
+  useEffect(() => {
+      localStorage.setItem(StorageKeys.USER_CODE, code);
+  }, [code]);
 
   
   const handleCompile = (): CompilerResult | null => {

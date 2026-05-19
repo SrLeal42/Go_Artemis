@@ -1,15 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
 import { SoundInstance } from '../../scene3D/scripts/managers/SoundManager';
+import { StorageKeys } from '../../constants/StorageKeys';
 
 export default function VolumeControl() {
     const [isOpen, setIsOpen] = useState(false);
-    const [volume, setVolume] = useState(SoundInstance.getMasterVolume());
+    
+    const [volume, setVolume] = useState(() => {
+        const saved = localStorage.getItem(StorageKeys.MASTER_VOLUME);
+        return saved !== null ? parseFloat(saved) : 1;
+    });
+
     const containerRef = useRef<HTMLDivElement>(null);
 
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = parseFloat(e.target.value);
         setVolume(val);
         SoundInstance.setMasterVolume(val);
+        localStorage.setItem(StorageKeys.MASTER_VOLUME, val.toString());
     };
 
     // Fecha ao clicar fora

@@ -1,4 +1,5 @@
 import * as B from '@babylonjs/core';
+import { StorageKeys } from '../../../constants/StorageKeys';
 
 export const SoundCategory = {
     SFX: 'sfx',
@@ -50,6 +51,11 @@ class SoundManager {
             );
             bus.volume = this.volumes.get(category) ?? 1;
             this.buses.set(category, bus);
+        }
+
+        const savedVolume = localStorage.getItem(StorageKeys.MASTER_VOLUME);
+        if (savedVolume !== null) {
+            this.audioEngine.volume = Math.max(0, Math.min(parseFloat(savedVolume), 1));
         }
 
         await this.initializeSounds();
